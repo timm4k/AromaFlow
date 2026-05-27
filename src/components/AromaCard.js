@@ -1,4 +1,5 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useEffect, useRef } from "react";
+import { Animated, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function AromaCard({
   title,
@@ -11,128 +12,168 @@ export default function AromaCard({
   onPress,
   favorited,
   onToggleFavorite,
+  enableAnimations,
 }) {
   const dots = Array.from({ length: 5 }, (_, i) => i < (intensity || 0));
+  const scale = useRef(new Animated.Value(1)).current;
+  const fadeIn = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const dur = enableAnimations ? 400 : 0;
+    Animated.timing(fadeIn, {
+      toValue: 1,
+      duration: dur,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
+  const onPressIn = () => {
+    Animated.spring(scale, {
+      toValue: enableAnimations ? 0.97 : 1,
+      friction: 8,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const onPressOut = () => {
+    Animated.spring(scale, {
+      toValue: 1,
+      friction: 5,
+      useNativeDriver: true,
+    }).start();
+  };
 
   return (
-    <TouchableOpacity activeOpacity={0.75} onPress={onPress}>
-      <View
-        style={[
-          styles.card,
-          compact && styles.cardCompact,
-          {
-            backgroundColor: theme.card,
-
-            shadowColor: theme.shadow,
-          },
-        ]}
+    <Animated.View style={{ transform: [{ scale }], opacity: fadeIn }}>
+      <TouchableOpacity
+        activeOpacity={0.75}
+        onPress={onPress}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
       >
         <View
           style={[
-            styles.emojiBox,
-            compact && styles.emojiBoxCompact,
+            styles.card,
+            compact && styles.cardCompact,
             {
-              backgroundColor: theme.bg,
+              backgroundColor: theme.card,
+
+              shadowColor: theme.shadow,
             },
           ]}
         >
-          <Text style={styles.emoji}>{emoji || ""}</Text>
-        </View>
-
-        <View style={styles.content}>
-          <View style={styles.header}>
-            <Text
-              numberOfLines={1}
-              style={[
-                styles.title,
-                compact && styles.titleCompact,
-                {
-                  color: theme.text,
-                },
-              ]}
-            >
-              {title || ""}
-            </Text>
-
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={onToggleFavorite}
-              style={styles.favoriteButton}
-            >
-              <Text
-                style={[styles.favorite, favorited && styles.favoriteActive]}
-              >
-                {favorited ? "❤️" : "🤍"}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.badgeRow}>
-            <View
-              style={[
-                styles.badge,
-                {
-                  backgroundColor: theme.accentLight,
-                },
-              ]}
-            >
-              <Text
-                style={[
-                  styles.badgeText,
-                  {
-                    color: theme.accent,
-                  },
-                ]}
-              >
-                {category || ""}
-              </Text>
-            </View>
-          </View>
-
-          <Text
-            numberOfLines={compact ? 1 : 2}
+          <View
             style={[
-              styles.description,
-              compact && styles.descriptionCompact,
+              styles.emojiBox,
+              compact && styles.emojiBoxCompact,
               {
-                color: theme.textSecondary,
+                backgroundColor: theme.bg,
               },
             ]}
           >
-            {shortDescription || ""}
-          </Text>
+            <Text style={styles.emoji}>{emoji || ""}</Text>
+          </View>
 
-          <View style={styles.intensityRow}>
+          <View style={styles.content}>
+            <View style={styles.header}>
+              <Text
+                numberOfLines={1}
+                style={[
+                  styles.title,
+                  compact && styles.titleCompact,
+                  {
+                    color: theme.text,
+                    fontSize: compact ? 15 * theme.fontScale : 17 * theme.fontScale,
+                  },
+                ]}
+              >
+                {title || ""}
+              </Text>
+
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={onToggleFavorite}
+                style={styles.favoriteButton}
+              >
+                <Text
+                  style={[styles.favorite, favorited && styles.favoriteActive]}
+                >
+                  {favorited ? "❤️" : "🤍"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.badgeRow}>
+              <View
+                style={[
+                  styles.badge,
+                  {
+                    backgroundColor: theme.accentLight,
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.badgeText,
+                    {
+                      color: theme.accent,
+                      fontSize: 11 * theme.fontScale,
+                    },
+                  ]}
+                >
+                  {category || ""}
+                </Text>
+              </View>
+            </View>
+
             <Text
+              numberOfLines={compact ? 1 : 2}
               style={[
-                styles.intensityLabel,
+                styles.description,
+                compact && styles.descriptionCompact,
                 {
-                  color: theme.accentDim,
+                  color: theme.textSecondary,
+                  fontSize: compact ? 12 * theme.fontScale : 13 * theme.fontScale,
+                  lineHeight: compact ? 17 * theme.fontScale : 19 * theme.fontScale,
                 },
               ]}
             >
-              Intensity
+              {shortDescription || ""}
             </Text>
 
-            <View style={styles.dots}>
-              {dots.map((filled, i) => (
-                <View
-                  key={i}
-                  style={[
-                    styles.dot,
-                    {
-                      backgroundColor: filled
-                        ? theme.accent
-                        : theme.accentLight,
-                    },
-                  ]}
-                />
-              ))}
+            <View style={styles.intensityRow}>
+              <Text
+                style={[
+                  styles.intensityLabel,
+                  {
+                    color: theme.accentDim,
+                    fontSize: 11 * theme.fontScale,
+                  },
+                ]}
+              >
+                Intensity
+              </Text>
+
+              <View style={styles.dots}>
+                {dots.map((filled, i) => (
+                  <View
+                    key={i}
+                    style={[
+                      styles.dot,
+                      {
+                        backgroundColor: filled
+                          ? theme.accent
+                          : theme.accentLight,
+                      },
+                    ]}
+                  />
+                ))}
+              </View>
             </View>
           </View>
         </View>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </Animated.View>
   );
 }
 

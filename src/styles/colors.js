@@ -19,9 +19,28 @@ export const palette = {
   neutralCard: "#FFFFFF",
   neutralText: "#1C1C1E",
   neutralTextSecondary: "#8E8E93",
+
+  cardBg: "#FFFFFF",
+  shadowColor: "#7B5EA7",
+  overlay: "rgba(43,25,82,0.55)",
+  error: "#E85D75",
+  success: "#4CAF50",
 };
 
-export function getTheme(darkMode, pastelMode, accentIntensity) {
+export const fontSizeScale = {
+  small: 0.88,
+  medium: 1,
+  large: 1.12,
+};
+
+export function getTheme(darkMode, pastelMode, accentIntensity, fontSize = "medium") {
+  const fontScaleMap = {
+    small: 0.92,
+    medium: 1,
+    large: 1.12,
+  };
+  const fontScale = fontScaleMap[fontSize] || 1;
+
   const intensityMap = {
     low: {
       accent: "#B8A2E3",
@@ -60,6 +79,10 @@ export function getTheme(darkMode, pastelMode, accentIntensity) {
 
       shadow: "#000000",
 
+      cardBg: palette.darkCard,
+
+      fontScale,
+
       ...intensity,
     };
   }
@@ -80,6 +103,10 @@ export function getTheme(darkMode, pastelMode, accentIntensity) {
 
       shadow: "#000000",
 
+      cardBg: palette.neutralCard,
+
+      fontScale,
+
       ...intensity,
     };
   }
@@ -95,9 +122,13 @@ export function getTheme(darkMode, pastelMode, accentIntensity) {
 
     navBg: palette.white,
 
-    overlay: "rgba(43,25,82,0.55)",
+    overlay: palette.overlay,
 
-    shadow: "#7B5EA7",
+    shadow: palette.shadowColor,
+
+    cardBg: palette.cardBg,
+
+    fontScale,
 
     ...intensity,
   };

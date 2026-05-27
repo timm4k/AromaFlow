@@ -23,6 +23,7 @@ export default function SettingItem({
             styles.title,
             {
               color: theme.text,
+              fontSize: 16 * theme.fontScale,
             },
           ]}
         >
@@ -54,6 +55,7 @@ export default function SettingItem({
                       color: active ? "#FFFFFF" : theme.accent,
 
                       fontWeight: active ? "700" : "600",
+                      fontSize: 13 * theme.fontScale,
                     },
                   ]}
                 >
@@ -81,6 +83,7 @@ export default function SettingItem({
           styles.title,
           {
             color: theme.text,
+            fontSize: 16 * theme.fontScale,
           },
         ]}
       >

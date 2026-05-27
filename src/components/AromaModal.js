@@ -1,4 +1,6 @@
+import { useEffect, useRef } from "react";
 import {
+  Animated,
   Modal,
   ScrollView,
   StyleSheet,
@@ -7,10 +9,33 @@ import {
   View,
 } from "react-native";
 
-export default function AromaModal({ visible, aroma, onClose, theme }) {
+export default function AromaModal({ visible, aroma, onClose, theme, enableAnimations }) {
   if (!aroma) return null;
 
   const dots = Array.from({ length: 5 }, (_, i) => i < (aroma.intensity || 0));
+  const overlayOpacity = useRef(new Animated.Value(0)).current;
+  const sheetTranslate = useRef(new Animated.Value(300)).current;
+
+  useEffect(() => {
+    if (visible) {
+      const dur = enableAnimations ? 300 : 0;
+      Animated.parallel([
+        Animated.timing(overlayOpacity, {
+          toValue: 1,
+          duration: dur,
+          useNativeDriver: true,
+        }),
+        Animated.timing(sheetTranslate, {
+          toValue: 0,
+          duration: dur,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else {
+      overlayOpacity.setValue(0);
+      sheetTranslate.setValue(300);
+    }
+  }, [visible, enableAnimations]);
 
   return (
     <Modal
@@ -19,19 +44,21 @@ export default function AromaModal({ visible, aroma, onClose, theme }) {
       animationType="slide"
       onRequestClose={onClose}
     >
-      <View
+      <Animated.View
         style={[
           styles.overlay,
           {
             backgroundColor: theme.overlay,
+            opacity: overlayOpacity,
           },
         ]}
       >
-        <View
+        <Animated.View
           style={[
             styles.sheet,
             {
               backgroundColor: theme.card,
+              transform: [{ translateY: sheetTranslate }],
             },
           ]}
         >
@@ -69,6 +96,7 @@ export default function AromaModal({ visible, aroma, onClose, theme }) {
                 styles.title,
                 {
                   color: theme.text,
+                  fontSize: 28 * theme.fontScale,
                 },
               ]}
             >
@@ -88,6 +116,7 @@ export default function AromaModal({ visible, aroma, onClose, theme }) {
                   styles.badgeText,
                   {
                     color: theme.accent,
+                    fontSize: 13 * theme.fontScale,
                   },
                 ]}
               >
@@ -96,16 +125,17 @@ export default function AromaModal({ visible, aroma, onClose, theme }) {
             </View>
 
             <View style={styles.intensityRow}>
-              <Text
-                style={[
-                  styles.intensityLabel,
-                  {
-                    color: theme.textSecondary,
-                  },
-                ]}
-              >
-                Intensity
-              </Text>
+                <Text
+                  style={[
+                    styles.intensityLabel,
+                    {
+                      color: theme.textSecondary,
+                      fontSize: 13 * theme.fontScale,
+                    },
+                  ]}
+                >
+                  Intensity
+                </Text>
 
               <View style={styles.dots}>
                 {dots.map((filled, i) => (
@@ -138,6 +168,8 @@ export default function AromaModal({ visible, aroma, onClose, theme }) {
                 styles.description,
                 {
                   color: theme.textSecondary,
+                  fontSize: 15 * theme.fontScale,
+                  lineHeight: 23 * theme.fontScale,
                 },
               ]}
             >
@@ -150,6 +182,7 @@ export default function AromaModal({ visible, aroma, onClose, theme }) {
                   styles.detailLabel,
                   {
                     color: theme.text,
+                    fontSize: 13 * theme.fontScale,
                   },
                 ]}
               >
@@ -161,6 +194,8 @@ export default function AromaModal({ visible, aroma, onClose, theme }) {
                   styles.detailValue,
                   {
                     color: theme.textSecondary,
+                    fontSize: 15 * theme.fontScale,
+                    lineHeight: 21 * theme.fontScale,
                   },
                 ]}
               >
@@ -174,6 +209,7 @@ export default function AromaModal({ visible, aroma, onClose, theme }) {
                   styles.detailLabel,
                   {
                     color: theme.text,
+                    fontSize: 13 * theme.fontScale,
                   },
                 ]}
               >
@@ -185,6 +221,8 @@ export default function AromaModal({ visible, aroma, onClose, theme }) {
                   styles.detailValue,
                   {
                     color: theme.textSecondary,
+                    fontSize: 15 * theme.fontScale,
+                    lineHeight: 21 * theme.fontScale,
                   },
                 ]}
               >
@@ -207,15 +245,54 @@ export default function AromaModal({ visible, aroma, onClose, theme }) {
                   styles.moodText,
                   {
                     color: theme.accent,
+                    fontSize: 15 * theme.fontScale,
                   },
                 ]}
               >
                 {aroma.mood || ""}
               </Text>
             </View>
+
+            {aroma.isCustom && (
+              <View style={styles.customSection}>
+                <View
+                  style={[
+                    styles.createdByBadge,
+                    { backgroundColor: theme.accentLight },
+                  ]}
+                >
+                  <Text style={styles.createdByIcon}>🖋️</Text>
+                  <Text
+                    style={[
+                      styles.createdByText,
+                      { color: theme.accent, fontSize: 12 * theme.fontScale },
+                    ]}
+                  >
+                    Created by You
+                  </Text>
+                </View>
+                {aroma.createdAt && (
+                  <Text
+                    style={[
+                      styles.createdDate,
+                      {
+                        color: theme.textSecondary,
+                        fontSize: 11 * theme.fontScale,
+                      },
+                    ]}
+                  >
+                    {new Date(aroma.createdAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </Text>
+                )}
+              </View>
+            )}
           </ScrollView>
-        </View>
-      </View>
+        </Animated.View>
+      </Animated.View>
     </Modal>
   );
 }
@@ -250,7 +327,6 @@ const styles = StyleSheet.create({
   },
 
   closeText: {
-    fontSize: 18,
     fontWeight: "700",
   },
 
@@ -377,5 +453,38 @@ const styles = StyleSheet.create({
   moodText: {
     fontSize: 15,
     fontWeight: "700",
+  },
+
+  customSection: {
+    alignItems: "center",
+    marginTop: 18,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: "transparent",
+  },
+
+  createdByBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 14,
+    marginBottom: 8,
+  },
+
+  createdByIcon: {
+    fontSize: 14,
+    marginRight: 6,
+  },
+
+  createdByText: {
+    fontWeight: "700",
+    letterSpacing: 0.2,
+  },
+
+  createdDate: {
+    fontWeight: "500",
+    opacity: 0.6,
+    letterSpacing: 0.1,
   },
 });

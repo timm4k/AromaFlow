@@ -27,7 +27,7 @@ export default function SearchBar({ query, onChange, theme }) {
         placeholderTextColor={theme.textSecondary}
         autoCapitalize="none"
         autoCorrect={false}
-        style={[styles.input, { color: theme.text }]}
+        style={[styles.input, { color: theme.text, fontSize: 15 * theme.fontScale }]}
       />
 
       {query.length > 0 && (
@@ -79,7 +79,6 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
 
-    fontSize: 15,
     fontWeight: "500",
 
     paddingVertical: 12,

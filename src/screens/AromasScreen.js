@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 
 import AromaCard from "../components/AromaCard";
 import AromaModal from "../components/AromaModal";
@@ -14,6 +14,8 @@ export default function AromasScreen({
   favorites,
   favoritesOnly,
   onToggleFavorite,
+  showEmojis,
+  enableAnimations,
 }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -48,7 +50,15 @@ export default function AromasScreen({
         selected={selectedCategory}
         onSelect={setSelectedCategory}
         theme={theme}
+        enableAnimations={enableAnimations}
       />
+
+      <View style={styles.countRow}>
+        <Text style={[styles.countText, { color: theme.textSecondary, fontSize: 12 * theme.fontScale }]}>
+          {visibleAromas.length} {visibleAromas.length === 1 ? "aroma" : "aromas"}
+          {favoritesOnly ? " (favorites)" : ""}
+        </Text>
+      </View>
 
       <FlatList
         data={visibleAromas}
@@ -61,12 +71,13 @@ export default function AromasScreen({
             category={item.category}
             intensity={item.intensity}
             shortDescription={item.shortDescription}
-            emoji={item.emoji}
+            emoji={showEmojis !== false ? item.emoji : ""}
             theme={theme}
             compact={compactCards}
             onPress={() => setSelectedAroma(item)}
             favorited={favorites.includes(item.id)}
             onToggleFavorite={() => onToggleFavorite(item.id)}
+            enableAnimations={enableAnimations}
           />
         )}
       />
@@ -77,6 +88,7 @@ export default function AromasScreen({
           aroma={selectedAroma}
           onClose={() => setSelectedAroma(null)}
           theme={theme}
+          enableAnimations={enableAnimations}
         />
       )}
     </View>
@@ -88,8 +100,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
+  countRow: {
+    paddingHorizontal: 20,
+    paddingBottom: 8,
+  },
+
+  countText: {
+    fontSize: 12,
+    fontWeight: "600",
+    letterSpacing: 0.3,
+    opacity: 0.6,
+  },
+
   list: {
     paddingTop: 4,
-    paddingBottom: 28,
+    paddingBottom: 120,
   },
 });
