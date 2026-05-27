@@ -6,6 +6,8 @@ node_modules/
 dist/
 web-build/
 
+.vscode/
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
