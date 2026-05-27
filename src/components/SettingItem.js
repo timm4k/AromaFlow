@@ -1,4 +1,12 @@
-import { StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
+import {
+  StyleSheet,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+
+import { borderRadius } from "../styles/spacing";
 
 export default function SettingItem({
   title,
@@ -42,8 +50,9 @@ export default function SettingItem({
                 style={[
                   styles.option,
                   {
-                    backgroundColor: active ? theme.accent : theme.accentLight,
-
+                    backgroundColor: active
+                      ? theme.accent
+                      : theme.accentLight,
                     borderColor: active ? theme.accent : "transparent",
                   },
                 ]}
@@ -52,8 +61,7 @@ export default function SettingItem({
                   style={[
                     styles.optionText,
                     {
-                      color: active ? "#FFFFFF" : theme.accent,
-
+                      color: active ? theme.white : theme.accent,
                       fontWeight: active ? "700" : "600",
                       fontSize: 13 * theme.fontScale,
                     },
@@ -97,7 +105,7 @@ export default function SettingItem({
           false: theme.accentLight,
           true: theme.accentDim,
         }}
-        thumbColor={value ? theme.accent : "#FFFFFF"}
+        thumbColor={value ? theme.accent : theme.white}
       />
     </View>
   );
@@ -106,58 +114,46 @@ export default function SettingItem({
 const styles = StyleSheet.create({
   container: {
     minHeight: 68,
-
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-
     paddingHorizontal: 20,
     paddingVertical: 14,
-
     borderBottomWidth: 1,
   },
 
   containerColumn: {
     paddingHorizontal: 20,
     paddingVertical: 16,
-
     borderBottomWidth: 1,
   },
 
   title: {
     flex: 1,
-
     paddingRight: 16,
-
     fontSize: 16,
     fontWeight: "600",
-
     letterSpacing: -0.2,
   },
 
   optionsRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-
     marginTop: 14,
   },
 
   option: {
     paddingHorizontal: 14,
     paddingVertical: 8,
-
-    borderRadius: 12,
+    borderRadius: borderRadius.sm + 4,
     borderWidth: 1.5,
-
     marginRight: 8,
     marginBottom: 8,
   },
 
   optionText: {
     fontSize: 13,
-
     textTransform: "capitalize",
-
     letterSpacing: 0.2,
   },
 });

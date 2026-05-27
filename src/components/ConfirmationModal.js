@@ -1,5 +1,15 @@
 import { useEffect, useRef } from "react";
-import { Animated, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Animated,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+
+import { shadows } from "../styles/shadows";
+import { borderRadius, spacing } from "../styles/spacing";
 
 export default function ConfirmationModal({
   visible,
@@ -19,6 +29,7 @@ export default function ConfirmationModal({
   useEffect(() => {
     if (visible) {
       const dur = enableAnimations ? 250 : 0;
+
       Animated.parallel([
         Animated.spring(dialogScale, {
           toValue: 1,
@@ -49,16 +60,37 @@ export default function ConfirmationModal({
         <Animated.View
           style={[
             styles.dialog,
-            { backgroundColor: theme.card, opacity: dialogOpacity, transform: [{ scale: dialogScale }] },
+            {
+              backgroundColor: theme.card,
+              shadowColor: theme.shadow,
+              opacity: dialogOpacity,
+              transform: [{ scale: dialogScale }],
+            },
+            shadows.modal,
           ]}
         >
-          <Text style={[styles.title, { color: theme.text, fontSize: 18 * theme.fontScale }]}>
+          <Text
+            style={[
+              styles.title,
+              {
+                color: theme.text,
+                fontSize: 18 * theme.fontScale,
+              },
+            ]}
+          >
             {title}
           </Text>
 
           {message && (
             <Text
-              style={[styles.message, { color: theme.textSecondary, fontSize: 14 * theme.fontScale, lineHeight: 20 * theme.fontScale }]}
+              style={[
+                styles.message,
+                {
+                  color: theme.textSecondary,
+                  fontSize: 14 * theme.fontScale,
+                  lineHeight: 20 * theme.fontScale,
+                },
+              ]}
             >
               {message}
             </Text>
@@ -77,7 +109,10 @@ export default function ConfirmationModal({
               <Text
                 style={[
                   styles.buttonText,
-                  { color: theme.textSecondary, fontSize: 15 * theme.fontScale },
+                  {
+                    color: theme.textSecondary,
+                    fontSize: 15 * theme.fontScale,
+                  },
                 ]}
               >
                 {cancelText}
@@ -90,11 +125,20 @@ export default function ConfirmationModal({
               style={[
                 styles.button,
                 {
-                  backgroundColor: destructive ? "#E85D75" : theme.accent,
+                  backgroundColor: destructive ? theme.error : theme.accent,
                 },
               ]}
             >
-              <Text style={[styles.buttonText, styles.confirmText, { fontSize: 15 * theme.fontScale }]}>
+              <Text
+                style={[
+                  styles.buttonText,
+                  styles.confirmText,
+                  {
+                    color: theme.white,
+                    fontSize: 15 * theme.fontScale,
+                  },
+                ]}
+              >
                 {confirmText}
               </Text>
             </TouchableOpacity>
@@ -116,22 +160,16 @@ const styles = StyleSheet.create({
   dialog: {
     width: "100%",
     maxWidth: 340,
-    borderRadius: 24,
-    padding: 24,
+    borderRadius: borderRadius.xl,
+    padding: spacing.lg,
     alignItems: "center",
-
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 24,
-    elevation: 10,
   },
 
   title: {
     fontSize: 18,
     fontWeight: "700",
     textAlign: "center",
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
 
   message: {
@@ -139,7 +177,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     textAlign: "center",
     lineHeight: 20,
-    marginBottom: 20,
+    marginBottom: spacing.lg,
     opacity: 0.7,
   },
 
@@ -152,7 +190,7 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     paddingVertical: 14,
-    borderRadius: 16,
+    borderRadius: borderRadius.md,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -167,7 +205,6 @@ const styles = StyleSheet.create({
   },
 
   confirmText: {
-    color: "#FFFFFF",
     fontWeight: "700",
   },
 });

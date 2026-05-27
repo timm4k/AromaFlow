@@ -1,12 +1,16 @@
 import { useMemo, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { useAuth } from "../context/AuthContext";
 import AromaCard from "../components/AromaCard";
 import AromaModal from "../components/AromaModal";
 import CategoryFilter from "../components/CategoryFilter";
+import ScreenHeader from "../components/ScreenHeader";
 import SearchBar from "../components/SearchBar";
 
 import { aromas, categories } from "../data/aromas";
+import { spacing } from "../styles/spacing";
 
 export default function AromasScreen({
   theme,
@@ -17,6 +21,8 @@ export default function AromasScreen({
   showEmojis,
   enableAnimations,
 }) {
+  const insets = useSafeAreaInsets();
+  const { currentUser } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedAroma, setSelectedAroma] = useState(null);
@@ -43,6 +49,13 @@ export default function AromasScreen({
 
   return (
     <View style={[styles.container, { backgroundColor: theme.bg }]}>
+      <ScreenHeader
+        title="Aromas"
+        subtitle="Built-in aromatic components"
+        theme={theme}
+        style={{ paddingTop: insets.top + 12 }}
+      />
+
       <SearchBar query={searchQuery} onChange={setSearchQuery} theme={theme} />
 
       <CategoryFilter
@@ -54,8 +67,14 @@ export default function AromasScreen({
       />
 
       <View style={styles.countRow}>
-        <Text style={[styles.countText, { color: theme.textSecondary, fontSize: 12 * theme.fontScale }]}>
-          {visibleAromas.length} {visibleAromas.length === 1 ? "aroma" : "aromas"}
+        <Text
+          style={[
+            styles.countText,
+            { color: theme.textSecondary },
+          ]}
+        >
+          {visibleAromas.length}{" "}
+          {visibleAromas.length === 1 ? "aroma" : "aromas"}
           {favoritesOnly ? " (favorites)" : ""}
         </Text>
       </View>
@@ -89,6 +108,7 @@ export default function AromasScreen({
           onClose={() => setSelectedAroma(null)}
           theme={theme}
           enableAnimations={enableAnimations}
+          currentUser={currentUser}
         />
       )}
     </View>
@@ -113,7 +133,7 @@ const styles = StyleSheet.create({
   },
 
   list: {
-    paddingTop: 4,
+    paddingTop: spacing.xs,
     paddingBottom: 120,
   },
 });

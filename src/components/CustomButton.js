@@ -26,10 +26,10 @@ export default function CustomButton({
             backgroundColor: disabled
               ? theme.accentLight
               : variant === "danger"
-                ? "#E85D75"
+                ? theme.error
                 : theme.accent,
 
-            shadowColor: variant === "danger" ? "#E85D75" : theme.accent,
+            shadowColor: variant === "danger" ? theme.error : theme.accent,
             opacity: disabled ? 0.5 : 1,
           },
         ]}
@@ -38,7 +38,7 @@ export default function CustomButton({
           style={[
             styles.text,
             {
-              color: disabled ? theme.accentDim + "99" : "#FFFFFF",
+              color: disabled ? theme.accentDim + "99" : theme.white,
               fontSize: 17 * theme.fontScale,
             },
           ]}

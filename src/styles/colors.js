@@ -63,73 +63,54 @@ export function getTheme(darkMode, pastelMode, accentIntensity, fontSize = "medi
 
   const intensity = intensityMap[accentIntensity] || intensityMap.medium;
 
+  const base = {
+    white: palette.white,
+    error: palette.error,
+    success: palette.success,
+    fontScale,
+    ...intensity,
+  };
+
   if (darkMode) {
     return {
+      ...base,
       bg: palette.darkBg,
       card: palette.darkCard,
-
       text: palette.darkText,
       textSecondary: palette.darkTextSecondary,
-
       border: "#3B2B5A",
-
       navBg: palette.darkCard,
-
       overlay: "rgba(15,10,25,0.78)",
-
       shadow: "#000000",
-
       cardBg: palette.darkCard,
-
-      fontScale,
-
-      ...intensity,
     };
   }
 
   if (!pastelMode) {
     return {
+      ...base,
       bg: palette.neutralBg,
       card: palette.neutralCard,
-
       text: palette.neutralText,
       textSecondary: palette.neutralTextSecondary,
-
       border: "#E5E5EA",
-
       navBg: palette.neutralCard,
-
       overlay: "rgba(0,0,0,0.4)",
-
       shadow: "#000000",
-
       cardBg: palette.neutralCard,
-
-      fontScale,
-
-      ...intensity,
     };
   }
 
   return {
+    ...base,
     bg: palette.bg,
     card: palette.white,
-
     text: palette.text,
     textSecondary: palette.textSecondary,
-
     border: palette.border,
-
     navBg: palette.white,
-
     overlay: palette.overlay,
-
     shadow: palette.shadowColor,
-
     cardBg: palette.cardBg,
-
-    fontScale,
-
-    ...intensity,
   };
 }

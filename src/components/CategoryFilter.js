@@ -27,7 +27,7 @@ function CategoryPill({ cat, active, onSelect, theme, animationsEnabled }) {
 
   const textColor = bgAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [theme.accent, "#FFFFFF"],
+    outputRange: [theme.accent, theme.white],
   });
 
   return (

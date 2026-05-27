@@ -1,5 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 
+import { borderRadius, spacing } from "../styles/spacing";
+
 export default function EmptyState({
   emoji = "📭",
   title,
@@ -17,10 +19,29 @@ export default function EmptyState({
         <Text style={styles.emoji}>{emoji}</Text>
       </View>
 
-      <Text style={[styles.title, { color: theme.text, fontSize: 20 * theme.fontScale }]}>{title}</Text>
+      <Text
+        style={[
+          styles.title,
+          {
+            color: theme.text,
+            fontSize: 20 * theme.fontScale,
+          },
+        ]}
+      >
+        {title}
+      </Text>
 
       {subtitle && (
-        <Text style={[styles.subtitle, { color: theme.textSecondary, fontSize: 15 * theme.fontScale, lineHeight: 22 * theme.fontScale }]}>
+        <Text
+          style={[
+            styles.subtitle,
+            {
+              color: theme.textSecondary,
+              fontSize: 15 * theme.fontScale,
+              lineHeight: 22 * theme.fontScale,
+            },
+          ]}
+        >
           {subtitle}
         </Text>
       )}
@@ -40,10 +61,10 @@ const styles = StyleSheet.create({
   emojiBox: {
     width: 80,
     height: 80,
-    borderRadius: 24,
+    borderRadius: borderRadius.xl,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: spacing.lg,
   },
 
   emoji: {
@@ -54,7 +75,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "700",
     textAlign: "center",
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
 
   subtitle: {

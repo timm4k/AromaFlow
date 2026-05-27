@@ -1,20 +1,42 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Animated, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Animated,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import AromaModal from "../components/AromaModal";
 import CategoryFilter from "../components/CategoryFilter";
 import ConfirmationModal from "../components/ConfirmationModal";
 import EmptyState from "../components/EmptyState";
+import ScreenHeader from "../components/ScreenHeader";
 import SearchBar from "../components/SearchBar";
 
 import { categories } from "../data/aromas";
+import { useAuth } from "../context/AuthContext";
+import { shadows } from "../styles/shadows";
+import { spacing, borderRadius } from "../styles/spacing";
 
-function CustomAromaCard({ item, theme, onPress, onDelete, favorited, onToggleFavorite, enableAnimations }) {
+function CustomAromaCard({
+  item,
+  theme,
+  onPress,
+  onDelete,
+  favorited,
+  onToggleFavorite,
+  enableAnimations,
+  onToggleVisibility,
+}) {
   const scale = useRef(new Animated.Value(1)).current;
   const fadeIn = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const dur = enableAnimations ? 400 : 0;
+
     Animated.timing(fadeIn, {
       toValue: 1,
       duration: dur,
@@ -37,6 +59,7 @@ function CustomAromaCard({ item, theme, onPress, onDelete, favorited, onToggleFa
       useNativeDriver: true,
     }).start();
   };
+
   const dots = Array.from({ length: 5 }, (_, i) => i < (item.intensity || 0));
 
   return (
@@ -50,13 +73,13 @@ function CustomAromaCard({ item, theme, onPress, onDelete, favorited, onToggleFa
         <View
           style={[
             styles.card,
-            {
-              backgroundColor: theme.card,
-              shadowColor: theme.shadow,
-            },
+            { backgroundColor: theme.card, shadowColor: theme.shadow },
+            shadows.card,
           ]}
         >
-          <View style={[styles.emojiBox, { backgroundColor: theme.bg }]}>
+          <View
+            style={[styles.emojiBox, { backgroundColor: theme.bg }]}
+          >
             <Text style={styles.emoji}>{item.emoji || ""}</Text>
           </View>
 
@@ -65,7 +88,7 @@ function CustomAromaCard({ item, theme, onPress, onDelete, favorited, onToggleFa
               <View style={styles.titleRow}>
                 <Text
                   numberOfLines={1}
-                  style={[styles.title, { color: theme.text, fontSize: 17 * theme.fontScale }]}
+                  style={[styles.title, { color: theme.text }]}
                 >
                   {item.title || ""}
                 </Text>
@@ -73,13 +96,15 @@ function CustomAromaCard({ item, theme, onPress, onDelete, favorited, onToggleFa
                 <View
                   style={[
                     styles.customBadge,
-                    {
-                      backgroundColor: theme.accentLight,
-                      shadowColor: theme.accent,
-                    },
+                    { backgroundColor: theme.accentLight, shadowColor: theme.accent },
                   ]}
                 >
-                  <Text style={[styles.customBadgeText, { color: theme.accent, fontSize: 9 * theme.fontScale }]}>
+                  <Text
+                    style={[
+                      styles.customBadgeText,
+                      { color: theme.accent },
+                    ]}
+                  >
                     CUSTOM
                   </Text>
                 </View>
@@ -91,7 +116,10 @@ function CustomAromaCard({ item, theme, onPress, onDelete, favorited, onToggleFa
                 style={styles.favoriteButton}
               >
                 <Text
-                  style={[styles.favorite, favorited && styles.favoriteActive]}
+                  style={[
+                    styles.favorite,
+                    favorited && styles.favoriteActive,
+                  ]}
                 >
                   {favorited ? "❤️" : "🤍"}
                 </Text>
@@ -99,16 +127,48 @@ function CustomAromaCard({ item, theme, onPress, onDelete, favorited, onToggleFa
             </View>
 
             <View style={styles.badgeRow}>
-              <View style={[styles.badge, { backgroundColor: theme.accentLight }]}>
-                <Text style={[styles.badgeText, { color: theme.accent, fontSize: 11 * theme.fontScale }]}>
+              <View
+                style={[
+                  styles.badge,
+                  { backgroundColor: theme.accentLight },
+                ]}
+              >
+                <Text
+                  style={[styles.badgeText, { color: theme.accent }]}
+                >
                   {item.category || ""}
                 </Text>
               </View>
+
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => onToggleVisibility(item)}
+                style={[
+                  styles.visibilityToggle,
+                  { backgroundColor: theme.accentLight },
+                ]}
+              >
+                <Text style={styles.visibilityIcon}>
+                  {item.visibility === "public" ? "🌍" : "🔒"}
+                </Text>
+
+                <Text
+                  style={[
+                    styles.visibilityLabel,
+                    { color: theme.accent },
+                  ]}
+                >
+                  {item.visibility === "public" ? "PUBLIC" : "PRIVATE"}
+                </Text>
+              </TouchableOpacity>
             </View>
 
             <Text
               numberOfLines={2}
-              style={[styles.description, { color: theme.textSecondary, fontSize: 13 * theme.fontScale, lineHeight: 19 * theme.fontScale }]}
+              style={[
+                styles.description,
+                { color: theme.textSecondary },
+              ]}
             >
               {item.shortDescription || ""}
             </Text>
@@ -151,8 +211,11 @@ export default function MyAromasScreen({
   favorites,
   onToggleFavorite,
   onDeleteAroma,
+  onUpdateAroma,
   enableAnimations,
 }) {
+  const insets = useSafeAreaInsets();
+  const { currentUser } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedAroma, setSelectedAroma] = useState(null);
@@ -175,15 +238,26 @@ export default function MyAromasScreen({
   }, [searchQuery, selectedCategory, customAromas]);
 
   function handleConfirmDelete() {
-    if (deleteTarget) {
-      onDeleteAroma(deleteTarget.id);
-      setDeleteTarget(null);
-    }
+    if (!deleteTarget) return;
+
+    onDeleteAroma(deleteTarget.id);
+    setDeleteTarget(null);
+  }
+
+  function handleToggleVisibility(aroma) {
+    const newVis = aroma.visibility === "public" ? "private" : "public";
+
+    onUpdateAroma(aroma.id, { visibility: newVis });
   }
 
   if (customAromas.length === 0) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.bg }]}>
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: theme.bg, paddingTop: insets.top + 12 },
+        ]}
+      >
         <EmptyState
           emoji="🧪"
           title="No custom aromas yet"
@@ -196,6 +270,13 @@ export default function MyAromasScreen({
 
   return (
     <View style={[styles.container, { backgroundColor: theme.bg }]}>
+      <ScreenHeader
+        title="My Aromas"
+        subtitle="Your personal aroma collection"
+        theme={theme}
+        style={{ paddingTop: insets.top + 12 }}
+      />
+
       <SearchBar query={searchQuery} onChange={setSearchQuery} theme={theme} />
 
       <CategoryFilter
@@ -220,6 +301,7 @@ export default function MyAromasScreen({
             favorited={favorites.includes(item.id)}
             onToggleFavorite={() => onToggleFavorite(item.id)}
             enableAnimations={enableAnimations}
+            onToggleVisibility={handleToggleVisibility}
           />
         )}
         ListEmptyComponent={
@@ -239,13 +321,14 @@ export default function MyAromasScreen({
           onClose={() => setSelectedAroma(null)}
           theme={theme}
           enableAnimations={enableAnimations}
+          currentUser={currentUser}
         />
       )}
 
       <ConfirmationModal
         visible={!!deleteTarget}
         title="Delete Aroma"
-        message={`Are you sure you want to delete "${deleteTarget?.title}"? This action cannot be undone.`}
+        message={`Are you sure you want to delete "${deleteTarget?.title}"?`}
         confirmText="Delete"
         cancelText="Cancel"
         onConfirm={handleConfirmDelete}
@@ -264,27 +347,22 @@ const styles = StyleSheet.create({
   },
 
   list: {
-    paddingTop: 4,
+    paddingTop: spacing.xs,
     paddingBottom: 120,
   },
 
   card: {
     flexDirection: "row",
-    borderRadius: 22,
+    borderRadius: borderRadius.xxl,
     padding: 14,
     marginHorizontal: 14,
     marginVertical: 6,
-
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 3,
   },
 
   emojiBox: {
     width: 58,
     height: 58,
-    borderRadius: 16,
+    borderRadius: borderRadius.md,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 14,
@@ -323,7 +401,7 @@ const styles = StyleSheet.create({
   customBadge: {
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: 8,
+    borderRadius: borderRadius.sm,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
@@ -353,18 +431,38 @@ const styles = StyleSheet.create({
   badgeRow: {
     flexDirection: "row",
     marginBottom: 5,
+    gap: 6,
   },
 
   badge: {
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 9,
+    borderRadius: borderRadius.sm,
   },
 
   badgeText: {
     fontSize: 11,
     fontWeight: "700",
     letterSpacing: 0.3,
+  },
+
+  visibilityToggle: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: borderRadius.sm,
+    gap: 4,
+  },
+
+  visibilityIcon: {
+    fontSize: 11,
+  },
+
+  visibilityLabel: {
+    fontSize: 9,
+    fontWeight: "800",
+    letterSpacing: 0.5,
   },
 
   description: {

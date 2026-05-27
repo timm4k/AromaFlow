@@ -1,54 +1,86 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
+import ScreenHeader from "../components/ScreenHeader";
 import SettingItem from "../components/SettingItem";
+import SectionHeader from "../components/SectionHeader";
+import SettingsSection from "../components/SettingsSection";
+import { spacing } from "../styles/spacing";
+import { shadows } from "../styles/shadows";
 
-export default function SettingsScreen({
-  theme,
-  darkMode,
-  setDarkMode,
-  pastelMode,
-  setPastelMode,
-  favoritesOnly,
-  setFavoritesOnly,
-  compactCards,
-  setCompactCards,
-  accentIntensity,
-  setAccentIntensity,
-  showEmojis,
-  setShowEmojis,
-  enableAnimations,
-  setEnableAnimations,
-  fontSize,
-  setFontSize,
-}) {
+export default function SettingsScreen() {
+  const insets = useSafeAreaInsets();
+  const { currentUser, logout } = useAuth();
+  const {
+    theme,
+    darkMode,
+    setDarkMode,
+    pastelMode,
+    setPastelMode,
+    favoritesOnly,
+    setFavoritesOnly,
+    compactCards,
+    setCompactCards,
+    accentIntensity,
+    setAccentIntensity,
+    showEmojis,
+    setShowEmojis,
+    enableAnimations,
+    setEnableAnimations,
+    fontSize,
+    setFontSize,
+  } = useTheme();
+
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.bg }]}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[
+        styles.content,
+        { paddingTop: insets.top + 12 },
+      ]}
       showsVerticalScrollIndicator={false}
     >
-      <Text style={[styles.screenTitle, { color: theme.text, fontSize: 28 * theme.fontScale }]}>
-        Settings
-      </Text>
+      <ScreenHeader
+        title="Settings"
+        subtitle="Customize your experience"
+        theme={theme}
+      />
 
-      <Text style={[styles.screenSubtitle, { color: theme.textSecondary, fontSize: 14 * theme.fontScale }]}>
-        Customize your experience
-      </Text>
+      {currentUser && (
+        <View
+          style={[
+            styles.profileCard,
+            { backgroundColor: theme.card, shadowColor: theme.shadow },
+            shadows.profile,
+          ]}
+        >
+          <View
+            style={[
+              styles.avatarBox,
+              { backgroundColor: theme.accentLight },
+            ]}
+          >
+            <Text style={styles.avatar}>{currentUser.avatar}</Text>
+          </View>
 
-      <View style={styles.sectionHeader}>
-        <Text style={[styles.sectionTitle, { color: theme.text, fontSize: 13 * theme.fontScale }]}>
-          Appearance
-        </Text>
-      </View>
+          <View style={styles.profileInfo}>
+            <Text style={[styles.profileName, { color: theme.text }]}>
+              Logged in as {currentUser.displayName}
+            </Text>
 
-      <View
-        style={[
-          styles.section,
-          {
-            backgroundColor: theme.card,
-            shadowColor: theme.shadow,
-          },
-        ]}
-      >
+            <Text
+              style={[styles.profileUsername, { color: theme.textSecondary }]}
+            >
+              @{currentUser.username}
+            </Text>
+          </View>
+        </View>
+      )}
+
+      <SectionHeader title="Appearance" theme={theme} />
+
+      <SettingsSection theme={theme}>
         <SettingItem
           title="Dark Mode"
           value={darkMode}
@@ -73,23 +105,11 @@ export default function SettingsScreen({
           options={["low", "medium", "high"]}
           theme={theme}
         />
-      </View>
+      </SettingsSection>
 
-      <View style={styles.sectionHeader}>
-        <Text style={[styles.sectionTitle, { color: theme.text, fontSize: 13 * theme.fontScale }]}>
-          Accessibility
-        </Text>
-      </View>
+      <SectionHeader title="Accessibility" theme={theme} />
 
-      <View
-        style={[
-          styles.section,
-          {
-            backgroundColor: theme.card,
-            shadowColor: theme.shadow,
-          },
-        ]}
-      >
+      <SettingsSection theme={theme}>
         <SettingItem
           title="Compact Cards"
           value={compactCards}
@@ -106,23 +126,11 @@ export default function SettingsScreen({
           options={["small", "medium", "large"]}
           theme={theme}
         />
-      </View>
+      </SettingsSection>
 
-      <View style={styles.sectionHeader}>
-        <Text style={[styles.sectionTitle, { color: theme.text, fontSize: 13 * theme.fontScale }]}>
-          Preferences
-        </Text>
-      </View>
+      <SectionHeader title="Preferences" theme={theme} />
 
-      <View
-        style={[
-          styles.section,
-          {
-            backgroundColor: theme.card,
-            shadowColor: theme.shadow,
-          },
-        ]}
-      >
+      <SettingsSection theme={theme}>
         <SettingItem
           title="Favorites Only"
           value={favoritesOnly}
@@ -138,23 +146,11 @@ export default function SettingsScreen({
           type="switch"
           theme={theme}
         />
-      </View>
+      </SettingsSection>
 
-      <View style={styles.sectionHeader}>
-        <Text style={[styles.sectionTitle, { color: theme.text, fontSize: 13 * theme.fontScale }]}>
-          Interface
-        </Text>
-      </View>
+      <SectionHeader title="Interface" theme={theme} />
 
-      <View
-        style={[
-          styles.section,
-          {
-            backgroundColor: theme.card,
-            shadowColor: theme.shadow,
-          },
-        ]}
-      >
+      <SettingsSection theme={theme}>
         <SettingItem
           title="Enable Animations"
           value={enableAnimations}
@@ -162,18 +158,31 @@ export default function SettingsScreen({
           type="switch"
           theme={theme}
         />
-      </View>
+      </SettingsSection>
+
+      <TouchableOpacity
+        activeOpacity={0.85}
+        onPress={logout}
+        style={[
+          styles.logoutButton,
+          { backgroundColor: theme.accentLight, borderColor: theme.accent },
+        ]}
+      >
+        <Text style={[styles.logoutText, { color: theme.accent }]}>
+          Log Out
+        </Text>
+      </TouchableOpacity>
 
       <View style={styles.footer}>
-        <Text style={[styles.footerTitle, { color: theme.accent, fontSize: 20 * theme.fontScale }]}>
+        <Text style={[styles.footerTitle, { color: theme.accent }]}>
           AromaFlow
         </Text>
 
-        <Text style={[styles.footerSub, { color: theme.textSecondary, fontSize: 13 * theme.fontScale }]}>
+        <Text style={[styles.footerSub, { color: theme.textSecondary }]}>
           Interactive Aromatic Component System
         </Text>
 
-        <Text style={[styles.footerVersion, { color: theme.textSecondary, fontSize: 12 * theme.fontScale }]}>
+        <Text style={[styles.footerVersion, { color: theme.textSecondary }]}>
           v1.0.0
         </Text>
       </View>
@@ -190,53 +199,64 @@ const styles = StyleSheet.create({
     paddingBottom: 120,
   },
 
-  screenTitle: {
-    fontSize: 28,
-    fontWeight: "700",
-    letterSpacing: -0.5,
-    paddingHorizontal: 20,
-    paddingTop: 4,
-    marginBottom: 4,
+  profileCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginHorizontal: spacing.md,
+    marginBottom: spacing.sm,
+    padding: 18,
+    borderRadius: 22,
   },
 
-  screenSubtitle: {
-    fontSize: 14,
+  avatarBox: {
+    width: 56,
+    height: 56,
+    borderRadius: 18,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: spacing.md,
+  },
+
+  avatar: {
+    fontSize: 28,
+  },
+
+  profileInfo: {
+    flex: 1,
+  },
+
+  profileName: {
+    fontSize: 17,
+    fontWeight: "700",
+    letterSpacing: -0.3,
+    marginBottom: 2,
+  },
+
+  profileUsername: {
+    fontSize: 13,
     fontWeight: "500",
-    paddingHorizontal: 20,
-    marginBottom: 8,
     opacity: 0.7,
   },
 
-  sectionHeader: {
-    paddingHorizontal: 24,
-    paddingTop: 20,
-    paddingBottom: 8,
+  logoutButton: {
+    marginHorizontal: spacing.md,
+    marginTop: spacing.lg,
+    paddingVertical: spacing.md,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1.5,
   },
 
-  sectionTitle: {
-    fontSize: 13,
+  logoutText: {
+    fontSize: 16,
     fontWeight: "700",
-    letterSpacing: 0.5,
-    textTransform: "uppercase",
-  },
-
-  section: {
-    marginHorizontal: 16,
-    borderRadius: 18,
-
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 3,
+    letterSpacing: 0.3,
   },
 
   footer: {
     alignItems: "center",
-    paddingTop: 32,
+    paddingTop: spacing.xl,
     paddingBottom: 40,
     paddingHorizontal: 20,
   },
@@ -249,7 +269,7 @@ const styles = StyleSheet.create({
 
   footerSub: {
     fontSize: 13,
-    marginTop: 4,
+    marginTop: spacing.xs,
     textAlign: "center",
   },
 

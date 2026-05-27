@@ -6,6 +6,9 @@ import {
   View,
 } from "react-native";
 
+import { shadows } from "../styles/shadows";
+import { borderRadius } from "../styles/spacing";
+
 export default function SearchBar({ query, onChange, theme }) {
   return (
     <View
@@ -16,6 +19,7 @@ export default function SearchBar({ query, onChange, theme }) {
           borderColor: theme.border,
           shadowColor: theme.shadow,
         },
+        shadows.cardCompact,
       ]}
     >
       <Text style={styles.icon}>🔍</Text>
@@ -27,7 +31,13 @@ export default function SearchBar({ query, onChange, theme }) {
         placeholderTextColor={theme.textSecondary}
         autoCapitalize="none"
         autoCorrect={false}
-        style={[styles.input, { color: theme.text, fontSize: 15 * theme.fontScale }]}
+        style={[
+          styles.input,
+          {
+            color: theme.text,
+            fontSize: 15 * theme.fontScale,
+          },
+        ]}
       />
 
       {query.length > 0 && (
@@ -46,41 +56,24 @@ export default function SearchBar({ query, onChange, theme }) {
 const styles = StyleSheet.create({
   container: {
     minHeight: 52,
-
     flexDirection: "row",
     alignItems: "center",
-
     marginHorizontal: 16,
     marginBottom: 10,
-
     paddingHorizontal: 14,
-
-    borderRadius: 18,
+    borderRadius: borderRadius.lg,
     borderWidth: 1,
-
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-
-    elevation: 2,
   },
 
   icon: {
     fontSize: 16,
     opacity: 0.55,
-
     marginRight: 10,
   },
 
   input: {
     flex: 1,
-
     fontWeight: "500",
-
     paddingVertical: 12,
   },
 

@@ -9,16 +9,32 @@ import {
   View,
 } from "react-native";
 
-export default function AromaModal({ visible, aroma, onClose, theme, enableAnimations }) {
+import { shadows } from "../styles/shadows";
+import { borderRadius } from "../styles/spacing";
+import { typography } from "../styles/typography";
+
+export default function AromaModal({
+  visible,
+  aroma,
+  onClose,
+  theme,
+  enableAnimations,
+  currentUser,
+}) {
   if (!aroma) return null;
 
-  const dots = Array.from({ length: 5 }, (_, i) => i < (aroma.intensity || 0));
+  const dots = Array.from(
+    { length: 5 },
+    (_, i) => i < (aroma.intensity || 0),
+  );
+
   const overlayOpacity = useRef(new Animated.Value(0)).current;
   const sheetTranslate = useRef(new Animated.Value(300)).current;
 
   useEffect(() => {
     if (visible) {
       const dur = enableAnimations ? 300 : 0;
+
       Animated.parallel([
         Animated.timing(overlayOpacity, {
           toValue: 1,
@@ -58,8 +74,10 @@ export default function AromaModal({ visible, aroma, onClose, theme, enableAnima
             styles.sheet,
             {
               backgroundColor: theme.card,
+              shadowColor: theme.shadow,
               transform: [{ translateY: sheetTranslate }],
             },
+            shadows.modal,
           ]}
         >
           <TouchableOpacity
@@ -125,17 +143,17 @@ export default function AromaModal({ visible, aroma, onClose, theme, enableAnima
             </View>
 
             <View style={styles.intensityRow}>
-                <Text
-                  style={[
-                    styles.intensityLabel,
-                    {
-                      color: theme.textSecondary,
-                      fontSize: 13 * theme.fontScale,
-                    },
-                  ]}
-                >
-                  Intensity
-                </Text>
+              <Text
+                style={[
+                  styles.intensityLabel,
+                  {
+                    color: theme.textSecondary,
+                    fontSize: 13 * theme.fontScale,
+                  },
+                ]}
+              >
+                Intensity
+              </Text>
 
               <View style={styles.dots}>
                 {dots.map((filled, i) => (
@@ -262,15 +280,22 @@ export default function AromaModal({ visible, aroma, onClose, theme, enableAnima
                   ]}
                 >
                   <Text style={styles.createdByIcon}>🖋️</Text>
+
                   <Text
                     style={[
                       styles.createdByText,
-                      { color: theme.accent, fontSize: 12 * theme.fontScale },
+                      {
+                        color: theme.accent,
+                        fontSize: 12 * theme.fontScale,
+                      },
                     ]}
                   >
-                    Created by You
+                    {currentUser && aroma.ownerId === currentUser.id
+                      ? "Created by You"
+                      : `Created by ${aroma.ownerName || "Unknown"}`}
                   </Text>
                 </View>
+
                 {aroma.createdAt && (
                   <Text
                     style={[
@@ -305,24 +330,19 @@ const styles = StyleSheet.create({
 
   sheet: {
     maxHeight: "85%",
-
     paddingTop: 20,
     paddingBottom: 36,
     paddingHorizontal: 24,
-
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
+    borderTopLeftRadius: borderRadius.xxl,
+    borderTopRightRadius: borderRadius.xxl,
   },
 
   closeButton: {
     alignSelf: "flex-end",
-
     width: 36,
     height: 36,
-
     justifyContent: "center",
     alignItems: "center",
-
     marginBottom: 6,
   },
 
@@ -333,14 +353,10 @@ const styles = StyleSheet.create({
   emojiBox: {
     width: 84,
     height: 84,
-
-    borderRadius: 24,
-
+    borderRadius: borderRadius.xl,
     justifyContent: "center",
     alignItems: "center",
-
     alignSelf: "center",
-
     marginBottom: 14,
   },
 
@@ -349,22 +365,16 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 28,
-    fontWeight: "700",
-
+    ...typography.screenTitle,
     textAlign: "center",
-
     marginBottom: 10,
   },
 
   badge: {
     alignSelf: "center",
-
     paddingHorizontal: 14,
     paddingVertical: 5,
-
-    borderRadius: 12,
-
+    borderRadius: borderRadius.sm + 4,
     marginBottom: 14,
   },
 
@@ -377,14 +387,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-
     marginBottom: 18,
   },
 
   intensityLabel: {
     fontSize: 13,
     fontWeight: "600",
-
     marginRight: 10,
   },
 
@@ -395,22 +403,18 @@ const styles = StyleSheet.create({
   dot: {
     width: 10,
     height: 10,
-
     borderRadius: 5,
-
     marginRight: 5,
   },
 
   divider: {
     height: 1,
-
     marginBottom: 18,
   },
 
   description: {
     fontSize: 15,
     lineHeight: 23,
-
     marginBottom: 18,
   },
 
@@ -421,9 +425,7 @@ const styles = StyleSheet.create({
   detailLabel: {
     fontSize: 13,
     fontWeight: "700",
-
     textTransform: "uppercase",
-
     marginBottom: 4,
   },
 
@@ -436,17 +438,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-
     padding: 14,
-
-    borderRadius: 16,
-
+    borderRadius: borderRadius.md,
     marginTop: 6,
   },
 
   moodIcon: {
     fontSize: 18,
-
     marginRight: 8,
   },
 
@@ -468,7 +466,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 14,
     paddingVertical: 7,
-    borderRadius: 14,
+    borderRadius: borderRadius.md,
     marginBottom: 8,
   },
 

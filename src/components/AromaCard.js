@@ -1,5 +1,15 @@
 import { useEffect, useRef } from "react";
-import { Animated, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Animated,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+
+import { shadows } from "../styles/shadows";
+import { borderRadius } from "../styles/spacing";
+import { typography } from "../styles/typography";
 
 export default function AromaCard({
   title,
@@ -14,12 +24,17 @@ export default function AromaCard({
   onToggleFavorite,
   enableAnimations,
 }) {
-  const dots = Array.from({ length: 5 }, (_, i) => i < (intensity || 0));
+  const dots = Array.from(
+    { length: 5 },
+    (_, i) => i < (intensity || 0),
+  );
+
   const scale = useRef(new Animated.Value(1)).current;
   const fadeIn = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const dur = enableAnimations ? 400 : 0;
+
     Animated.timing(fadeIn, {
       toValue: 1,
       duration: dur,
@@ -57,9 +72,9 @@ export default function AromaCard({
             compact && styles.cardCompact,
             {
               backgroundColor: theme.card,
-
               shadowColor: theme.shadow,
             },
+            shadows.card,
           ]}
         >
           <View
@@ -83,7 +98,9 @@ export default function AromaCard({
                   compact && styles.titleCompact,
                   {
                     color: theme.text,
-                    fontSize: compact ? 15 * theme.fontScale : 17 * theme.fontScale,
+                    fontSize: compact
+                      ? 15 * theme.fontScale
+                      : 17 * theme.fontScale,
                   },
                 ]}
               >
@@ -96,7 +113,10 @@ export default function AromaCard({
                 style={styles.favoriteButton}
               >
                 <Text
-                  style={[styles.favorite, favorited && styles.favoriteActive]}
+                  style={[
+                    styles.favorite,
+                    favorited && styles.favoriteActive,
+                  ]}
                 >
                   {favorited ? "❤️" : "🤍"}
                 </Text>
@@ -133,8 +153,12 @@ export default function AromaCard({
                 compact && styles.descriptionCompact,
                 {
                   color: theme.textSecondary,
-                  fontSize: compact ? 12 * theme.fontScale : 13 * theme.fontScale,
-                  lineHeight: compact ? 17 * theme.fontScale : 19 * theme.fontScale,
+                  fontSize: compact
+                    ? 12 * theme.fontScale
+                    : 13 * theme.fontScale,
+                  lineHeight: compact
+                    ? 17 * theme.fontScale
+                    : 19 * theme.fontScale,
                 },
               ]}
             >
@@ -180,23 +204,10 @@ export default function AromaCard({
 const styles = StyleSheet.create({
   card: {
     flexDirection: "row",
-
-    borderRadius: 22,
-
+    borderRadius: borderRadius.xxl,
     padding: 14,
-
     marginHorizontal: 14,
     marginVertical: 6,
-
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-
-    elevation: 3,
   },
 
   cardCompact: {
@@ -207,21 +218,16 @@ const styles = StyleSheet.create({
   emojiBox: {
     width: 58,
     height: 58,
-
-    borderRadius: 16,
-
+    borderRadius: borderRadius.md,
     justifyContent: "center",
     alignItems: "center",
-
     marginRight: 14,
   },
 
   emojiBoxCompact: {
     width: 46,
     height: 46,
-
-    borderRadius: 12,
-
+    borderRadius: borderRadius.sm + 4,
     marginRight: 10,
   },
 
@@ -237,23 +243,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-
     marginBottom: 5,
   },
 
   title: {
     flex: 1,
-
     marginRight: 8,
-
-    fontSize: 17,
-    fontWeight: "700",
-
-    letterSpacing: -0.3,
+    ...typography.cardTitle,
   },
 
   titleCompact: {
-    fontSize: 15,
+    ...typography.cardTitleCompact,
   },
 
   favoriteButton: {
@@ -272,28 +272,24 @@ const styles = StyleSheet.create({
 
   badgeRow: {
     flexDirection: "row",
-
     marginBottom: 5,
   },
 
   badge: {
     paddingHorizontal: 10,
     paddingVertical: 4,
-
-    borderRadius: 9,
+    borderRadius: borderRadius.sm,
   },
 
   badgeText: {
     fontSize: 11,
     fontWeight: "700",
-
     letterSpacing: 0.3,
   },
 
   description: {
     fontSize: 13,
     lineHeight: 19,
-
     marginBottom: 9,
   },
 
@@ -310,9 +306,7 @@ const styles = StyleSheet.create({
   intensityLabel: {
     fontSize: 11,
     fontWeight: "600",
-
     marginRight: 8,
-
     letterSpacing: 0.2,
   },
 
@@ -323,9 +317,7 @@ const styles = StyleSheet.create({
   dot: {
     width: 8,
     height: 8,
-
     borderRadius: 4,
-
     marginRight: 4,
   },
 });

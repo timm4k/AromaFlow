@@ -31,7 +31,7 @@ export default function InputField({
           {
             backgroundColor: theme.card,
             borderColor: showError
-              ? "#E85D75"
+              ? theme.error
               : touched && result.valid
                 ? "#4CAF50"
                 : theme.border,
@@ -60,7 +60,7 @@ export default function InputField({
       </View>
 
       {showError && (
-        <Text style={[styles.error, { fontSize: 12 * theme.fontScale }]}>{result.message}</Text>
+        <Text style={[styles.error, { color: theme.error, fontSize: 12 * theme.fontScale }]}>{result.message}</Text>
       )}
 
       {maxLength && (
@@ -105,7 +105,6 @@ const styles = StyleSheet.create({
   },
 
   error: {
-    color: "#E85D75",
     fontSize: 12,
     fontWeight: "500",
     marginTop: 6,

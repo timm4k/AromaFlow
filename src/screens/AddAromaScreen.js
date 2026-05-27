@@ -1,24 +1,51 @@
 import { useMemo, useState } from "react";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import CustomButton from "../components/CustomButton";
 import EmojiPicker from "../components/EmojiPicker";
 import InputField from "../components/InputField";
 import IntensitySlider from "../components/IntensitySlider";
+import ScreenHeader from "../components/ScreenHeader";
 
 import { addCategories, moods, moodIcons } from "../utils/constants";
-import { formatName, validateDescription, validateName } from "../utils/validation";
+import {
+  formatName,
+  validateDescription,
+  validateName,
+} from "../utils/validation";
+import { spacing } from "../styles/spacing";
 
-export default function AddAromaScreen({ theme, onAdd, existingNames, enableAnimations }) {
+export default function AddAromaScreen({
+  theme,
+  onAdd,
+  existingNames,
+  enableAnimations,
+}) {
+  const insets = useSafeAreaInsets();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedMood, setSelectedMood] = useState("");
   const [intensity, setIntensity] = useState(3);
   const [selectedEmoji, setSelectedEmoji] = useState("");
+  const [visibility, setVisibility] = useState("private");
 
-  const nameValidation = useMemo(() => validateName(name, existingNames), [name, existingNames]);
-  const descValidation = useMemo(() => validateDescription(description), [description]);
+  const nameValidation = useMemo(
+    () => validateName(name, existingNames),
+    [name, existingNames],
+  );
+
+  const descValidation = useMemo(
+    () => validateDescription(description),
+    [description],
+  );
 
   const canSubmit =
     nameValidation.valid &&
@@ -46,6 +73,7 @@ export default function AddAromaScreen({ theme, onAdd, existingNames, enableAnim
       origin: "Custom creation",
       recommendedUsage: `Best for ${selectedMood.toLowerCase()} moments`,
       mood: selectedMood,
+      visibility,
     });
 
     setName("");
@@ -54,22 +82,24 @@ export default function AddAromaScreen({ theme, onAdd, existingNames, enableAnim
     setSelectedMood("");
     setIntensity(3);
     setSelectedEmoji("");
+    setVisibility("private");
   }
 
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.bg }]}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[
+        styles.content,
+        { paddingTop: insets.top + 12 },
+      ]}
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
     >
-      <Text style={[styles.screenTitle, { color: theme.text, fontSize: 28 * theme.fontScale }]}>
-        New Aroma Note
-      </Text>
-
-      <Text style={[styles.screenSubtitle, { color: theme.textSecondary, fontSize: 14 * theme.fontScale }]}>
-        Create your own signature scent
-      </Text>
+      <ScreenHeader
+        title="New Aroma Note"
+        subtitle="Create your own signature scent"
+        theme={theme}
+      />
 
       <InputField
         label="Aroma Name"
@@ -98,13 +128,14 @@ export default function AddAromaScreen({ theme, onAdd, existingNames, enableAnim
       />
 
       <View style={styles.section}>
-        <Text style={[styles.sectionLabel, { color: theme.text, fontSize: 13 * theme.fontScale }]}>
+        <Text style={[styles.sectionLabel, { color: theme.text }]}>
           Category
         </Text>
 
         <View style={styles.pillsRow}>
           {addCategories.map((cat) => {
             const active = selectedCategory === cat;
+
             return (
               <TouchableOpacity
                 key={cat}
@@ -116,7 +147,9 @@ export default function AddAromaScreen({ theme, onAdd, existingNames, enableAnim
                 style={[
                   styles.pill,
                   {
-                    backgroundColor: active ? theme.accent : theme.accentLight,
+                    backgroundColor: active
+                      ? theme.accent
+                      : theme.accentLight,
                     borderColor: active ? theme.accent : "transparent",
                     shadowColor: active ? theme.accent : "transparent",
                     shadowOpacity: active ? 0.3 : 0,
@@ -127,7 +160,7 @@ export default function AddAromaScreen({ theme, onAdd, existingNames, enableAnim
                   style={[
                     styles.pillText,
                     {
-                      color: active ? "#FFFFFF" : theme.accent,
+                      color: active ? theme.white : theme.accent,
                       fontWeight: active ? "700" : "600",
                       fontSize: 13 * theme.fontScale,
                     },
@@ -140,8 +173,8 @@ export default function AddAromaScreen({ theme, onAdd, existingNames, enableAnim
           })}
         </View>
 
-          {!selectedCategory && (
-          <Text style={[styles.hint, { color: theme.textSecondary, fontSize: 12 * theme.fontScale }]}>
+        {!selectedCategory && (
+          <Text style={[styles.hint, { color: theme.textSecondary }]}>
             Please select a category
           </Text>
         )}
@@ -156,13 +189,14 @@ export default function AddAromaScreen({ theme, onAdd, existingNames, enableAnim
       />
 
       <View style={styles.section}>
-        <Text style={[styles.sectionLabel, { color: theme.text, fontSize: 13 * theme.fontScale }]}>
+        <Text style={[styles.sectionLabel, { color: theme.text }]}>
           Mood
         </Text>
 
         <View style={styles.moodGrid}>
           {moods.map((mood) => {
             const active = selectedMood === mood;
+
             return (
               <TouchableOpacity
                 key={mood}
@@ -171,17 +205,20 @@ export default function AddAromaScreen({ theme, onAdd, existingNames, enableAnim
                 style={[
                   styles.moodPill,
                   {
-                    backgroundColor: active ? theme.accent : theme.accentLight,
+                    backgroundColor: active
+                      ? theme.accent
+                      : theme.accentLight,
                     borderColor: active ? theme.accent : "transparent",
                   },
                 ]}
               >
                 <Text style={styles.moodIcon}>{moodIcons[mood]}</Text>
+
                 <Text
                   style={[
                     styles.moodText,
                     {
-                      color: active ? "#FFFFFF" : theme.accent,
+                      color: active ? theme.white : theme.accent,
                       fontWeight: active ? "700" : "600",
                       fontSize: 13 * theme.fontScale,
                     },
@@ -194,8 +231,8 @@ export default function AddAromaScreen({ theme, onAdd, existingNames, enableAnim
           })}
         </View>
 
-          {!selectedMood && (
-          <Text style={[styles.hint, { color: theme.textSecondary, fontSize: 12 * theme.fontScale }]}>
+        {!selectedMood && (
+          <Text style={[styles.hint, { color: theme.textSecondary }]}>
             Please select a mood
           </Text>
         )}
@@ -207,6 +244,89 @@ export default function AddAromaScreen({ theme, onAdd, existingNames, enableAnim
         theme={theme}
         enableAnimations={enableAnimations}
       />
+
+      <View style={styles.section}>
+        <Text style={[styles.sectionLabel, { color: theme.text }]}>
+          Visibility
+        </Text>
+
+        <View style={styles.visibilityRow}>
+          <TouchableOpacity
+            activeOpacity={0.75}
+            onPress={() => setVisibility("private")}
+            style={[
+              styles.visibilityPill,
+              {
+                backgroundColor:
+                  visibility === "private"
+                    ? theme.accent
+                    : theme.accentLight,
+                borderColor:
+                  visibility === "private" ? theme.accent : "transparent",
+              },
+            ]}
+          >
+            <Text style={styles.visibilityIcon}>🔒</Text>
+
+            <Text
+              style={[
+                styles.visibilityText,
+                {
+                    color:
+                      visibility === "private"
+                        ? theme.white
+                        : theme.accent,
+                  fontWeight: visibility === "private" ? "700" : "600",
+                },
+              ]}
+            >
+              Private
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.75}
+            onPress={() => setVisibility("public")}
+            style={[
+              styles.visibilityPill,
+              {
+                backgroundColor:
+                  visibility === "public"
+                    ? theme.accent
+                    : theme.accentLight,
+                borderColor:
+                  visibility === "public" ? theme.accent : "transparent",
+              },
+            ]}
+          >
+            <Text style={styles.visibilityIcon}>🌍</Text>
+
+            <Text
+              style={[
+                styles.visibilityText,
+                {
+                  color:
+                    visibility === "public" ? theme.white : theme.accent,
+                  fontWeight: visibility === "public" ? "700" : "600",
+                },
+              ]}
+            >
+              Public
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <Text
+          style={[
+            styles.visibilityHint,
+            { color: theme.textSecondary },
+          ]}
+        >
+          {visibility === "public"
+            ? "Everyone can see this aroma in Community"
+            : "Only you can see this aroma"}
+        </Text>
+      </View>
 
       <View style={styles.buttonContainer}>
         <CustomButton
@@ -229,20 +349,6 @@ const styles = StyleSheet.create({
   content: {
     padding: 20,
     paddingBottom: 120,
-  },
-
-  screenTitle: {
-    fontSize: 28,
-    fontWeight: "700",
-    letterSpacing: -0.5,
-    marginBottom: 4,
-  },
-
-  screenSubtitle: {
-    fontSize: 14,
-    fontWeight: "500",
-    marginBottom: 24,
-    opacity: 0.7,
   },
 
   section: {
@@ -268,7 +374,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 14,
     borderWidth: 1.5,
-
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
     elevation: 2,
@@ -309,6 +414,39 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     marginTop: 6,
     marginLeft: 4,
+    opacity: 0.6,
+  },
+
+  visibilityRow: {
+    flexDirection: "row",
+    gap: 10,
+  },
+
+  visibilityPill: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 14,
+    borderRadius: 16,
+    borderWidth: 1.5,
+    gap: 8,
+  },
+
+  visibilityIcon: {
+    fontSize: 18,
+  },
+
+  visibilityText: {
+    fontSize: 15,
+    letterSpacing: 0.2,
+  },
+
+  visibilityHint: {
+    fontSize: 12,
+    fontWeight: "500",
+    marginTop: 8,
+    textAlign: "center",
     opacity: 0.6,
   },
 
