@@ -4,72 +4,106 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "./AuthContext";
 import { aromas } from "../data/aromas";
 import {
-  loadCustomAromas,
-  loadFavorites,
-  saveCustomAromas,
-  saveFavorites,
-} from "../storage/aromaStorage";
+  addAroma as fbAddAroma,
+  deleteAroma as fbDeleteAroma,
+  subscribeMyAromas,
+  subscribePublicAromas,
+  updateAroma as fbUpdateAroma,
+} from "../firebase/aromaService";
+
+const STORAGE_FAVORITES = "@aromaflow/favorites";
 
 const AromaContext = createContext(null);
-
-let customIdCounter = 0;
 
 export function AromaProvider({ children }) {
   const { currentUser } = useAuth();
   const [customAromas, setCustomAromas] = useState([]);
+  const [publicAromas, setPublicAromas] = useState([]);
   const [favorites, setFavorites] = useState([]);
-  const [ready, setReady] = useState(false);
+  const [subscriptionsReady, setSubscriptionsReady] = useState(0);
+  const userIdRef = useRef(null);
 
   useEffect(() => {
     (async () => {
       try {
-        const [savedAromas, savedFavorites] = await Promise.all([
-          loadCustomAromas(),
-          loadFavorites(currentUser?.id),
-        ]);
+        const userId = currentUser?.uid || "guest";
 
-        if (savedAromas.length > 0) {
-          setCustomAromas(savedAromas);
+        if (userId === userIdRef.current) return;
 
-          savedAromas.forEach((a) => {
-            const m = a.id.match(/custom_(\d+)_/);
+        userIdRef.current = userId;
 
-            if (m) {
-              customIdCounter = Math.max(
-                customIdCounter,
-                parseInt(m[1], 10) + 1,
-              );
-            }
-          });
-        }
+        const raw = await AsyncStorage.getItem(
+          `${STORAGE_FAVORITES}_${userId}`,
+        );
 
-        if (savedFavorites.length > 0) {
-          setFavorites(savedFavorites);
+        if (raw) {
+          setFavorites(JSON.parse(raw));
+        } else {
+          setFavorites([]);
         }
       } catch (e) {
-        console.warn("Failed to load aromas", e);
-      } finally {
-        setReady(true);
+        console.warn("Failed to load favorites", e);
       }
     })();
-  }, [currentUser?.id]);
+  }, [currentUser?.uid]);
 
   useEffect(() => {
-    if (!ready) return;
+    const userId = currentUser?.uid;
 
-    saveCustomAromas(customAromas);
-  }, [customAromas, ready]);
+    setSubscriptionsReady(0);
+
+    const unsub1 = subscribePublicAromas(
+      (list) => {
+        setPublicAromas(list);
+        setSubscriptionsReady((prev) => prev + 1);
+      },
+      (error) => {
+        console.warn("Public aromas subscription error", error);
+      },
+    );
+
+    if (!userId) {
+      setCustomAromas([]);
+
+      return () => {
+        unsub1();
+      };
+    }
+
+    const unsub2 = subscribeMyAromas(
+      userId,
+      (list) => {
+        setCustomAromas(list);
+        setSubscriptionsReady((prev) => prev + 1);
+      },
+      (error) => {
+        console.warn("My aromas subscription error", error);
+      },
+    );
+
+    return () => {
+      unsub1();
+      unsub2();
+    };
+  }, [currentUser?.uid]);
+
+  const ready = subscriptionsReady >= 2 || subscriptionsReady >= 1;
 
   useEffect(() => {
-    if (!ready || !currentUser?.id) return;
+    const userId = currentUser?.uid || "guest";
 
-    saveFavorites(currentUser.id, favorites);
-  }, [favorites, ready, currentUser?.id]);
+    AsyncStorage.setItem(
+      `${STORAGE_FAVORITES}_${userId}`,
+      JSON.stringify(favorites),
+    ).catch(() => {});
+  }, [favorites, currentUser?.uid]);
 
   const allNames = useMemo(() => {
     const builtin = aromas.map((a) => a.title);
@@ -89,53 +123,46 @@ export function AromaProvider({ children }) {
   }, []);
 
   const onAddAroma = useCallback(
-    (aroma) => {
-      customIdCounter += 1;
-
-      const newAroma = {
+    async (aroma) => {
+      const newAroma = await fbAddAroma({
         ...aroma,
-        id: `custom_${customIdCounter}_${Date.now()}`,
-        isCustom: true,
-        createdAt: Date.now(),
-        ownerId: currentUser?.id || "unknown",
+        ownerId: currentUser?.uid || "unknown",
         ownerName: currentUser?.displayName || "Unknown",
         visibility: aroma.visibility || "private",
-      };
+      });
 
-      setCustomAromas((prev) => [newAroma, ...prev]);
+      return newAroma;
     },
     [currentUser],
   );
 
   const onDeleteAroma = useCallback(
-    (id) => {
+    async (id) => {
       const target = customAromas.find((a) => a.id === id);
 
-      if (target && target.ownerId !== currentUser?.id) {
+      if (target && target.ownerId !== currentUser?.uid) {
         console.warn("Owner mismatch: cannot delete another user's aroma");
 
         return;
       }
 
-      setCustomAromas((prev) => prev.filter((a) => a.id !== id));
+      await fbDeleteAroma(id);
       setFavorites((prev) => prev.filter((fid) => fid !== id));
     },
     [customAromas, currentUser],
   );
 
   const onUpdateAroma = useCallback(
-    (id, updates) => {
+    async (id, updates) => {
       const target = customAromas.find((a) => a.id === id);
 
-      if (target && target.ownerId !== currentUser?.id) {
+      if (target && target.ownerId !== currentUser?.uid) {
         console.warn("Owner mismatch: cannot update another user's aroma");
 
         return;
       }
 
-      setCustomAromas((prev) =>
-        prev.map((a) => (a.id === id ? { ...a, ...updates } : a)),
-      );
+      await fbUpdateAroma(id, updates);
     },
     [customAromas, currentUser],
   );
@@ -143,12 +170,8 @@ export function AromaProvider({ children }) {
   const myAromas = useMemo(() => {
     if (!currentUser) return [];
 
-    return customAromas.filter((a) => a.ownerId === currentUser.id);
+    return customAromas;
   }, [customAromas, currentUser]);
-
-  const publicAromas = useMemo(() => {
-    return customAromas.filter((a) => a.visibility === "public");
-  }, [customAromas]);
 
   return (
     <AromaContext.Provider

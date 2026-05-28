@@ -5,12 +5,11 @@ import {
   useEffect,
   useState,
 } from "react";
-import { findUser } from "../data/users";
 import {
-  getSession,
-  removeSession,
-  saveSession,
-} from "../storage/sessionStorage";
+  onAuthChanged,
+  signIn as fbSignIn,
+  signOut as fbSignOut,
+} from "../firebase/authService";
 
 const AuthContext = createContext(null);
 
@@ -19,41 +18,22 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    (async () => {
-      try {
-        const user = await getSession();
+    const unsubscribe = onAuthChanged((user) => {
+      setCurrentUser(user);
+      setLoading(false);
+    });
 
-        if (user) {
-          setCurrentUser(user);
-        }
-      } catch (e) {
-        console.warn("Failed to restore session", e);
-      } finally {
-        setLoading(false);
-      }
-    })();
+    return unsubscribe;
   }, []);
 
-  const login = useCallback(async (username, password) => {
-    const user = findUser(username, password);
-
-    if (!user) return false;
-
-    const session = {
-      id: user.id,
-      username: user.username,
-      displayName: user.displayName,
-      avatar: user.avatar,
-    };
-
-    await saveSession(session);
-    setCurrentUser(session);
+  const login = useCallback(async (email, password) => {
+    await fbSignIn(email, password);
 
     return true;
   }, []);
 
   const logout = useCallback(async () => {
-    await removeSession();
+    await fbSignOut();
     setCurrentUser(null);
   }, []);
 

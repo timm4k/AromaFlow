@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import LoginScreen from "../screens/LoginScreen";
+import AromaDetailsScreen from "../screens/AromaDetailsScreen";
 import MainTabs from "./MainTabs";
 
 const Stack = createNativeStackNavigator();
@@ -22,11 +23,19 @@ export default function AppNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {currentUser ? (
-        <Stack.Screen
-          name="MainTabs"
-          component={MainTabs}
-          options={{ animation: "fade" }}
-        />
+        <>
+          <Stack.Screen
+            name="MainTabs"
+            component={MainTabs}
+            options={{ animation: "fade" }}
+          />
+
+          <Stack.Screen
+            name="AromaDetails"
+            component={AromaDetailsScreen}
+            options={{ animation: "slide_from_right" }}
+          />
+        </>
       ) : (
         <Stack.Screen
           name="Login"

@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 import { shadows } from "../styles/shadows";
 import { borderRadius } from "../styles/spacing";
@@ -21,6 +22,8 @@ export default function AromaModal({
   enableAnimations,
   currentUser,
 }) {
+  const navigation = useNavigation();
+
   if (!aroma) return null;
 
   const dots = Array.from(
@@ -271,6 +274,20 @@ export default function AromaModal({
               </Text>
             </View>
 
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={() => {
+                onClose();
+                navigation.navigate("AromaDetails", { aromaId: aroma.id });
+              }}
+              style={[
+                styles.viewDetailsBtn,
+                { backgroundColor: theme.accent },
+              ]}
+            >
+              <Text style={styles.viewDetailsText}>View Details</Text>
+            </TouchableOpacity>
+
             {aroma.isCustom && (
               <View style={styles.customSection}>
                 <View
@@ -290,7 +307,7 @@ export default function AromaModal({
                       },
                     ]}
                   >
-                    {currentUser && aroma.ownerId === currentUser.id
+                    {currentUser && aroma.ownerId === currentUser.uid
                       ? "Created by You"
                       : `Created by ${aroma.ownerName || "Unknown"}`}
                   </Text>
@@ -451,6 +468,21 @@ const styles = StyleSheet.create({
   moodText: {
     fontSize: 15,
     fontWeight: "700",
+  },
+
+  viewDetailsBtn: {
+    paddingVertical: 12,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 16,
+  },
+
+  viewDetailsText: {
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "700",
+    letterSpacing: 0.3,
   },
 
   customSection: {

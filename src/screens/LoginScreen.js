@@ -1,64 +1,31 @@
-import { useEffect, useRef, useState } from "react";
-import {
-  Animated,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator, Animated, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
-import { spacing, borderRadius } from "../styles/spacing";
+import useLoginForm from "../hooks/useLoginForm";
+import useEntranceAnimation from "../hooks/useEntranceAnimation";
+import { spacing } from "../styles/spacing";
 import { shadows } from "../styles/shadows";
+import { styles } from "../styles/screens/loginStyles";
 
 export default function LoginScreen() {
   const insets = useSafeAreaInsets();
   const { login } = useAuth();
   const { theme, enableAnimations } = useTheme();
+  const {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    error,
+    isSubmitting,
+    handleSubmit,
+  } = useLoginForm(login);
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-
-  const fadeIn = useRef(new Animated.Value(0)).current;
-  const slideUp = useRef(new Animated.Value(40)).current;
-
-  useEffect(() => {
-    const dur = enableAnimations ? 600 : 0;
-
-    Animated.parallel([
-      Animated.timing(fadeIn, {
-        toValue: 1,
-        duration: dur,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideUp, {
-        toValue: 0,
-        duration: dur,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, []);
-
-  async function handleLogin() {
-    setError("");
-
-    if (!username.trim() || !password.trim()) {
-      setError("Please enter both username and password");
-      return;
-    }
-
-    const ok = await login(username.trim().toLowerCase(), password);
-
-    if (!ok) {
-      setError("Invalid username or password");
-    }
-  }
+  const { animatedStyle } = useEntranceAnimation({
+    enabled: enableAnimations,
+    duration: 600,
+  });
 
   return (
     <KeyboardAvoidingView
@@ -76,12 +43,7 @@ export default function LoginScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <Animated.View
-          style={[
-            styles.content,
-            { opacity: fadeIn, transform: [{ translateY: slideUp }] },
-          ]}
-        >
+        <Animated.View style={animatedStyle}>
           <View style={styles.headerSection}>
             <View
               style={[
@@ -104,14 +66,13 @@ export default function LoginScreen() {
           <View
             style={[
               styles.card,
-              styles.card,
               { backgroundColor: theme.card, shadowColor: theme.shadow },
               shadows.modal,
             ]}
           >
             <View style={styles.inputGroup}>
               <Text style={[styles.label, { color: theme.text }]}>
-                Username
+                Email
               </Text>
 
               <View
@@ -123,22 +84,25 @@ export default function LoginScreen() {
                   },
                 ]}
               >
-                <Text style={styles.inputIcon}>👤</Text>
+                <Text style={styles.inputIcon}>✉️</Text>
 
                 <TextInput
                   style={[styles.input, { color: theme.text }]}
-                  value={username}
-                  onChangeText={setUsername}
-                  placeholder="Enter username"
+                  value={email}
+                  onChangeText={setEmail}
+                  placeholder="tate@aromaflow.com"
                   placeholderTextColor={theme.textSecondary + "99"}
                   autoCapitalize="none"
                   autoCorrect={false}
+                  keyboardType="email-address"
+                  editable={!isSubmitting}
                 />
 
-                {username.length > 0 && (
+                {email.length > 0 && (
                   <TouchableOpacity
-                    onPress={() => setUsername("")}
+                    onPress={() => setEmail("")}
                     style={styles.clearBtn}
+                    disabled={isSubmitting}
                   >
                     <Text
                       style={{ color: theme.textSecondary, fontSize: 16 }}
@@ -173,27 +137,39 @@ export default function LoginScreen() {
                   placeholder="Enter password"
                   placeholderTextColor={theme.textSecondary + "99"}
                   secureTextEntry
+                  editable={!isSubmitting}
                 />
               </View>
             </View>
 
             {error ? (
-              <Text style={[styles.errorText, { color: theme.error }]}>{error}</Text>
+              <Text style={[styles.errorText, { color: theme.error }]}>
+                {error}
+              </Text>
             ) : null}
 
             <TouchableOpacity
               activeOpacity={0.85}
-              onPress={handleLogin}
+              onPress={handleSubmit}
+              disabled={isSubmitting}
               style={[
                 styles.loginButton,
                 {
-                  backgroundColor: theme.accent,
+                  backgroundColor: isSubmitting
+                    ? theme.accentLight
+                    : theme.accent,
                   shadowColor: theme.accent,
                 },
                 shadows.button,
               ]}
             >
-              <Text style={[styles.loginButtonText, { color: theme.white }]}>Sign In</Text>
+              {isSubmitting ? (
+                <ActivityIndicator size="small" color={theme.accent} />
+              ) : (
+                <Text style={[styles.loginButtonText, { color: theme.white }]}>
+                  Sign In
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
         </Animated.View>
@@ -201,117 +177,3 @@ export default function LoginScreen() {
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: "center",
-    padding: spacing.lg,
-  },
-
-  content: {
-    width: "100%",
-    maxWidth: 400,
-    alignSelf: "center",
-  },
-
-  headerSection: {
-    alignItems: "center",
-    marginBottom: spacing.xl,
-  },
-
-  logoCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: borderRadius.xxl,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: spacing.md,
-  },
-
-  logoEmoji: {
-    fontSize: 38,
-  },
-
-  title: {
-    fontSize: 32,
-    fontWeight: "800",
-    letterSpacing: -0.5,
-    marginBottom: 6,
-  },
-
-  subtitle: {
-    fontSize: 15,
-    fontWeight: "500",
-    opacity: 0.7,
-    textAlign: "center",
-  },
-
-  card: {
-    borderRadius: borderRadius.xxl,
-    padding: spacing.lg,
-  },
-
-  inputGroup: {
-    marginBottom: 18,
-  },
-
-  label: {
-    fontSize: 13,
-    fontWeight: "700",
-    letterSpacing: 0.5,
-    textTransform: "uppercase",
-    marginBottom: spacing.sm,
-  },
-
-  inputWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: borderRadius.md,
-    borderWidth: 1.5,
-    paddingHorizontal: spacing.md,
-    minHeight: 52,
-  },
-
-  inputIcon: {
-    fontSize: 16,
-    marginRight: 10,
-    opacity: 0.6,
-  },
-
-  input: {
-    flex: 1,
-    fontSize: 16,
-    fontWeight: "500",
-    paddingVertical: 12,
-  },
-
-  clearBtn: {
-    paddingLeft: spacing.sm,
-    paddingVertical: spacing.xs,
-  },
-
-  errorText: {
-    fontSize: 13,
-    fontWeight: "600",
-    marginBottom: spacing.md,
-    textAlign: "center",
-  },
-
-  loginButton: {
-    paddingVertical: spacing.md,
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  loginButtonText: {
-    fontSize: 17,
-    fontWeight: "700",
-    letterSpacing: 0.3,
-  },
-});

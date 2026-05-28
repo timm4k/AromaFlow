@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 import AromasScreen from "../screens/AromasScreen";
 import CommunityScreen from "../screens/CommunityScreen";
+import InspirationScreen from "../screens/InspirationScreen";
 import MyAromasScreen from "../screens/MyAromasScreen";
 import AddAromaScreen from "../screens/AddAromaScreen";
 import SettingsScreen from "../screens/SettingsScreen";
@@ -10,6 +11,7 @@ import { useTheme } from "../context/ThemeContext";
 import { useAromas } from "../context/AromaContext";
 import { shadows } from "../styles/shadows";
 import { borderRadius } from "../styles/spacing";
+import { withOpacity } from "../utils/colorHelpers";
 
 const Tab = createBottomTabNavigator();
 
@@ -105,7 +107,7 @@ export default function MainTabs() {
             borderRadius: borderRadius.xxl,
             paddingTop: 6,
             paddingBottom: 8,
-            backgroundColor: theme.card + "E0",
+            backgroundColor: withOpacity(theme.card, 0.88),
             borderTopWidth: 0,
             borderWidth: 1,
             borderColor: theme.border,
@@ -141,6 +143,17 @@ export default function MainTabs() {
               <TabIcon icon="🌍" focused={focused} accent={theme.accent} />
             ),
             tabBarLabel: "Community",
+          }}
+        />
+
+        <Tab.Screen
+          name="Inspiration"
+          component={InspirationScreen}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <TabIcon icon="✨" focused={focused} accent={theme.accent} />
+            ),
+            tabBarLabel: "Inspire",
           }}
         />
 
