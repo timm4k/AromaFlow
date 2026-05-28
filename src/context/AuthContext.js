@@ -7,6 +7,7 @@ import {
 } from "react";
 import {
   onAuthChanged,
+  registerUser as fbRegister,
   signIn as fbSignIn,
   signOut as fbSignOut,
 } from "../firebase/authService";
@@ -32,6 +33,12 @@ export function AuthProvider({ children }) {
     return true;
   }, []);
 
+  const register = useCallback(async (email, password, displayName) => {
+    await fbRegister(email, password, displayName);
+
+    return true;
+  }, []);
+
   const logout = useCallback(async () => {
     await fbSignOut();
     setCurrentUser(null);
@@ -42,6 +49,7 @@ export function AuthProvider({ children }) {
       value={{
         currentUser,
         login,
+        register,
         logout,
         loading,
       }}

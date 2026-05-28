@@ -14,15 +14,17 @@ import { spacing } from "../styles/spacing";
 import { shadows } from "../styles/shadows";
 import { styles } from "../styles/screens/loginStyles";
 
-export default function LoginScreen({ navigation }) {
+export default function RegisterScreen({ navigation }) {
   const insets = useSafeAreaInsets();
-  const { login } = useAuth();
+  const { register } = useAuth();
   const { theme, enableAnimations } = useTheme();
   const {
     email, setEmail,
     password, setPassword,
+    confirmPassword, setConfirmPassword,
+    displayName, setDisplayName,
     error, isSubmitting, handleSubmit,
-  } = useAuthForm({ mode: "login", login });
+  } = useAuthForm({ mode: "register", register });
 
   const { animatedStyle } = useEntranceAnimation({
     enabled: enableAnimations,
@@ -48,19 +50,31 @@ export default function LoginScreen({ navigation }) {
         <Animated.View style={animatedStyle}>
           <View style={styles.headerSection}>
             <View style={[styles.logoCircle, { backgroundColor: theme.accentLight }]}>
-              <Text style={styles.logoEmoji}>🌿</Text>
+              <Text style={styles.logoEmoji}>✨</Text>
             </View>
 
             <Text style={[styles.title, { color: theme.text }]}>
-              AromaFlow
+              Join AromaFlow
             </Text>
 
             <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
-              Sign in to your aromatic world
+              Create your aromatic profile
             </Text>
           </View>
 
           <AuthCard theme={theme}>
+            <AuthInput
+              label="Display Name"
+              icon="👤"
+              value={displayName}
+              onChangeText={setDisplayName}
+              placeholder="Your name (optional)"
+              error={error}
+              theme={theme}
+              editable={!isSubmitting}
+              autoCapitalize="words"
+            />
+
             <AuthInput
               label="Email"
               icon="✉️"
@@ -78,7 +92,19 @@ export default function LoginScreen({ navigation }) {
               icon="🔒"
               value={password}
               onChangeText={setPassword}
-              placeholder="Enter password"
+              placeholder="Min 6 characters"
+              error={error}
+              theme={theme}
+              editable={!isSubmitting}
+              secureTextEntry
+            />
+
+            <AuthInput
+              label="Confirm Password"
+              icon="🔒"
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              placeholder="Repeat password"
               error={error}
               theme={theme}
               editable={!isSubmitting}
@@ -98,15 +124,15 @@ export default function LoginScreen({ navigation }) {
               {isSubmitting ? (
                 <ActivityIndicator size="small" color={theme.accent} />
               ) : (
-                <Text style={[styles.loginButtonText, { color: theme.white }]}>Sign In</Text>
+                <Text style={[styles.loginButtonText, { color: theme.white }]}>Create Account</Text>
               )}
             </TouchableOpacity>
 
             <AuthFooter
               theme={theme}
-              label="Don't have an account?"
-              actionLabel="Create One"
-              onAction={() => navigation.navigate("Register")}
+              label="Already have an account?"
+              actionLabel="Sign In"
+              onAction={() => navigation.goBack()}
             />
           </AuthCard>
         </Animated.View>

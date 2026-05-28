@@ -1,14 +1,11 @@
-import { useEffect, useState } from "react";
-import {
-  ActivityIndicator, Image, ScrollView, Text,
-  TouchableOpacity, View,
-} from "react-native";
+import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
-import { getAromaById } from "../firebase/aromaService";
+import useAromaDetails from "../hooks/useAromaDetails";
 import useImageUpload from "../hooks/useImageUpload";
 import EmptyState from "../components/EmptyState";
+import ConfirmModal from "../components/common/ConfirmModal";
 import { styles } from "../styles/screens/aromaDetailsStyles";
 
 export default function AromaDetailsScreen({ route, navigation }) {
@@ -17,24 +14,15 @@ export default function AromaDetailsScreen({ route, navigation }) {
   const { theme } = useTheme();
   const { currentUser } = useAuth();
 
-  const [aroma, setAroma] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const { uploading, uploadProgress, pickAndUpload, removeImage } = useImageUpload(aroma, setAroma);
+  const {
+    aroma, setAroma, loading, isOwner,
+    dots, createdDate, handleShare, handleCalendarReminder,
+  } = useAromaDetails(aromaId, currentUser);
 
-  const isOwner = aroma && currentUser && aroma.ownerId === currentUser.uid;
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const data = await getAromaById(aromaId);
-        setAroma(data);
-      } catch (e) {
-        console.warn("Failed to load aroma", e);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [aromaId]);
+  const {
+    previewUri, showConfirm,
+    pickImage, confirmImage, cancelImage, removeImage,
+  } = useImageUpload(aroma, setAroma);
 
   if (loading) {
     return (
@@ -61,21 +49,22 @@ export default function AromaDetailsScreen({ route, navigation }) {
     );
   }
 
-  const dots = Array.from({ length: 5 }, (_, i) => i < (aroma.intensity || 0));
-
-  const createdDate = aroma.createdAt
-    ? new Date(aroma.createdAt).toLocaleDateString("en-US", {
-        year: "numeric", month: "long", day: "numeric",
-      })
-    : null;
-
   return (
     <View style={[styles.container, { backgroundColor: theme.bg }]}>
       <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
         <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.goBack()} style={styles.backButton}>
           <Text style={[styles.backText, { color: theme.accent }]}>← Back</Text>
         </TouchableOpacity>
-        <Text style={[styles.screenTitle, { color: theme.text }]}>Aroma Details</Text>
+
+        <View style={styles.headerActions}>
+          <TouchableOpacity activeOpacity={0.7} onPress={handleShare} style={styles.headerActionBtn}>
+            <Text style={{ fontSize: 18 }}>📤</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity activeOpacity={0.7} onPress={handleCalendarReminder} style={styles.headerActionBtn}>
+            <Text style={{ fontSize: 18 }}>📅</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
@@ -93,46 +82,17 @@ export default function AromaDetailsScreen({ route, navigation }) {
           </Text>
         </View>
 
-        {aroma.imageUrl ? (
-          <View style={styles.imageSection}>
-            <Image source={{ uri: aroma.imageUrl }} style={styles.aromaImage} resizeMode="cover" />
-
-            {isOwner && (
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={removeImage}
-                style={[styles.imageActionBtn, { backgroundColor: theme.error }]}
-              >
-                <Text style={styles.imageActionText}>Remove Image</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        ) : (
-          isOwner && (
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={pickAndUpload}
-              style={[styles.attachButton, { backgroundColor: theme.accentLight, borderColor: theme.accent }]}
-              disabled={uploading}
-            >
-              {uploading ? (
-                <View style={styles.uploadingRow}>
-                  <ActivityIndicator size="small" color={theme.accent} />
-                  <Text style={[styles.attachText, { color: theme.accent }]}>
-                    Uploading... {Math.round(uploadProgress * 100)}%
-                  </Text>
-                </View>
-              ) : (
-                <Text style={[styles.attachText, { color: theme.accent }]}>+ Attach Image</Text>
-              )}
-            </TouchableOpacity>
-          )
-        )}
+        <ImageSection
+          aroma={aroma}
+          isOwner={isOwner}
+          previewUri={previewUri}
+          pickImage={pickImage}
+          removeImage={removeImage}
+          theme={theme}
+        />
 
         <View style={styles.intensityRow}>
-          <Text style={[styles.intensityLabel, { color: theme.textSecondary, fontSize: 13 * theme.fontScale }]}>
-            Intensity
-          </Text>
+          <Text style={[styles.intensityLabel, { color: theme.textSecondary, fontSize: 13 * theme.fontScale }]}>Intensity</Text>
           <View style={styles.dots}>
             {dots.map((filled, i) => (
               <View key={i} style={[styles.dot, { backgroundColor: filled ? theme.accent : theme.accentLight }]} />
@@ -146,20 +106,34 @@ export default function AromaDetailsScreen({ route, navigation }) {
           {aroma.fullDescription || aroma.shortDescription || ""}
         </Text>
 
-        <View style={styles.detailRow}>
-          <Text style={[styles.detailLabel, { color: theme.text, fontSize: 13 * theme.fontScale }]}>Mood</Text>
-          <Text style={[styles.detailValue, { color: theme.accent }]}>{aroma.mood || "—"}</Text>
-        </View>
-
-        <View style={styles.detailRow}>
-          <Text style={[styles.detailLabel, { color: theme.text, fontSize: 13 * theme.fontScale }]}>Origin</Text>
-          <Text style={[styles.detailValue, { color: theme.textSecondary }]}>{aroma.origin || "Custom creation"}</Text>
-        </View>
+        <DetailRow label="Mood" value={aroma.mood || "—"} valueColor={theme.accent} theme={theme} />
+        <DetailRow label="Origin" value={aroma.origin || "Custom creation"} theme={theme} />
 
         {aroma.recommendedUsage && (
-          <View style={styles.detailRow}>
-            <Text style={[styles.detailLabel, { color: theme.text, fontSize: 13 * theme.fontScale }]}>Best for</Text>
-            <Text style={[styles.detailValue, { color: theme.textSecondary }]}>{aroma.recommendedUsage}</Text>
+          <DetailRow label="Best for" value={aroma.recommendedUsage} theme={theme} />
+        )}
+
+        {(aroma.interestingFact || aroma.predominance) && (
+          <View style={[styles.moreInfoSection, { borderTopColor: theme.border }]}>
+            <Text style={[styles.sectionTitle, { color: theme.text }]}>More Info</Text>
+
+            {aroma.interestingFact && (
+              <View style={[styles.factBox, { backgroundColor: theme.card }]}>
+                <Text style={styles.factIcon}>💡</Text>
+                <Text style={[styles.factText, { color: theme.text }]}>
+                  {aroma.interestingFact}
+                </Text>
+              </View>
+            )}
+
+            {aroma.predominance && (
+              <View style={styles.predominanceRow}>
+                <Text style={[styles.predominanceLabel, { color: theme.text }]}>Predominance</Text>
+                <Text style={[styles.predominanceValue, { color: theme.text }]}>
+                  {aroma.predominance}
+                </Text>
+              </View>
+            )}
           </View>
         )}
 
@@ -179,7 +153,68 @@ export default function AromaDetailsScreen({ route, navigation }) {
             {createdDate ? ` · ${createdDate}` : ""}
           </Text>
         )}
+
+        {aroma.isCustom === undefined && (
+          <Text style={[styles.ownerText, { color: theme.textSecondary, fontSize: 12 * theme.fontScale, marginTop: 8 }]}>
+            🌿 Built-in aroma · part of the AromaFlow library
+          </Text>
+        )}
       </ScrollView>
+
+      <ConfirmModal
+        visible={showConfirm}
+        title="Set Image"
+        message="Use this image for your aroma?"
+        confirmText="Use"
+        cancelText="Cancel"
+        onConfirm={confirmImage}
+        onCancel={cancelImage}
+      />
+    </View>
+  );
+}
+
+function ImageSection({ aroma, isOwner, previewUri, pickImage, removeImage, theme }) {
+  const displayUri = previewUri || aroma.imageUri;
+
+  if (displayUri) {
+    return (
+      <View style={styles.imageSection}>
+        <Image source={{ uri: displayUri }} style={styles.aromaImage} resizeMode="cover" />
+
+        {isOwner && !previewUri && (
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={removeImage}
+            style={[styles.imageActionBtn, { backgroundColor: theme.error }]}
+          >
+            <Text style={styles.imageActionText}>Remove Image</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    );
+  }
+
+  if (isOwner) {
+    return (
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={pickImage}
+        style={[styles.attachButton, { backgroundColor: theme.accentLight, borderColor: theme.accent }]}
+      >
+        <Text style={[styles.attachText, { color: theme.accent }]}>+ Attach Image</Text>
+      </TouchableOpacity>
+    );
+  }
+
+  return null;
+}
+
+function DetailRow({ label, value, valueColor, theme }) {
+  return (
+    <View style={styles.detailRow}>
+      <Text style={[styles.detailLabel, { color: theme.text, fontSize: 13 * theme.fontScale }]}>{label}</Text>
+      <Text style={[styles.detailValue, { color: valueColor || theme.textSecondary }]}>{value}</Text>
     </View>
   );
 }

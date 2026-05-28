@@ -14,6 +14,13 @@ export const styles = StyleSheet.create({
   profileInfo: { flex: 1 },
   profileName: { fontSize: 17, fontWeight: "700", letterSpacing: -0.3, marginBottom: 2 },
   profileUsername: { fontSize: 13, fontWeight: "500", opacity: 0.7 },
+  calendarButton: {
+    marginHorizontal: spacing.md, marginTop: spacing.sm,
+    paddingVertical: 14, borderRadius: 20,
+    alignItems: "center", justifyContent: "center", borderWidth: 1.5,
+  },
+  calendarButtonText: { fontSize: 15, fontWeight: "700", letterSpacing: 0.2 },
+  calendarStatus: { fontSize: 12, fontWeight: "600", textAlign: "center", marginTop: spacing.xs, opacity: 0.7 },
   logoutButton: {
     marginHorizontal: spacing.md, marginTop: spacing.lg,
     paddingVertical: spacing.md, borderRadius: 20,

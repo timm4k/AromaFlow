@@ -1,4 +1,5 @@
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { useCallback, useState } from "react";
+import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
@@ -16,6 +17,54 @@ export default function SettingsScreen() {
     favoritesOnly, setFavoritesOnly, compactCards, setCompactCards,
     accentIntensity, setAccentIntensity, showEmojis, setShowEmojis,
     enableAnimations, setEnableAnimations, fontSize, setFontSize } = useTheme();
+  const [calendarInstalled, setCalendarInstalled] = useState(null);
+  const [checkingCalendar, setCheckingCalendar] = useState(false);
+
+  const handleCalendar = useCallback(async () => {
+    setCheckingCalendar(true);
+
+    try {
+      const Calendar = await import("expo-calendar");
+
+      const { status } = await Calendar.requestCalendarPermissionsAsync();
+
+      if (status !== "granted") {
+        Alert.alert("Permission Denied", "Calendar access is needed to set reminders.");
+        setCalendarInstalled(false);
+        return;
+      }
+
+      const calendars = await Calendar.getCalendarsAsync();
+      const defaultCal = calendars.find((c) => c.allowsModifications) || calendars[0];
+
+      if (!defaultCal) {
+        Alert.alert("No Calendar Found", "Could not find a writable calendar on this device.");
+        setCalendarInstalled(false);
+        return;
+      }
+
+      const now = new Date();
+      const event = {
+        title: "AromaFlow: Explore Your Scents",
+        notes: "Take a moment to explore and discover new aromas in AromaFlow.",
+        startDate: now,
+        endDate: new Date(now.getTime() + 30 * 60 * 1000),
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      };
+
+      const eventId = await Calendar.createEventAsync(defaultCal.id, event);
+
+      if (eventId) {
+        Alert.alert("Reminder Added", "A 30-minute aroma exploration session has been added to your calendar.");
+        setCalendarInstalled(true);
+      }
+    } catch (e) {
+      Alert.alert("Calendar Unavailable", "Could not access calendar. Make sure expo-calendar is installed.");
+      setCalendarInstalled(false);
+    } finally {
+      setCheckingCalendar(false);
+    }
+  }, []);
 
   return (
     <ScrollView
@@ -41,6 +90,26 @@ export default function SettingsScreen() {
           </View>
         </View>
       )}
+
+      <SectionHeader title="Calendar" theme={theme} />
+      <SettingsSection theme={theme}>
+        <TouchableOpacity
+          activeOpacity={0.85}
+          onPress={handleCalendar}
+          disabled={checkingCalendar}
+          style={[styles.calendarButton, { backgroundColor: theme.accentLight, borderColor: theme.accent }]}
+        >
+          <Text style={[styles.calendarButtonText, { color: theme.accent }]}>
+            {checkingCalendar ? "Adding..." : "📅 Add Reminder to Calendar"}
+          </Text>
+        </TouchableOpacity>
+
+        {calendarInstalled !== null && (
+          <Text style={[styles.calendarStatus, { color: calendarInstalled ? theme.accent : theme.error }]}>
+            {calendarInstalled ? "✓ Calendar ready" : "✗ Calendar not available"}
+          </Text>
+        )}
+      </SettingsSection>
 
       <SectionHeader title="Appearance" theme={theme} />
       <SettingsSection theme={theme}>

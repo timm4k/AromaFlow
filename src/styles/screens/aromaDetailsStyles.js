@@ -4,7 +4,9 @@ import { typography } from "../typography";
 
 export const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: { paddingHorizontal: 20, paddingBottom: spacing.sm },
+  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20, paddingBottom: spacing.sm },
+  headerActions: { flexDirection: "row", gap: 8 },
+  headerActionBtn: { width: 36, height: 36, justifyContent: "center", alignItems: "center" },
   backButton: { paddingVertical: 4, marginBottom: 8 },
   backText: { fontSize: 15, fontWeight: "600", letterSpacing: -0.2 },
   screenTitle: { ...typography.screenTitle },
@@ -30,7 +32,6 @@ export const styles = StyleSheet.create({
     borderWidth: 1.5, borderStyle: "dashed", borderRadius: borderRadius.md,
     paddingVertical: 14, alignItems: "center", justifyContent: "center", marginBottom: 16,
   },
-  uploadingRow: { flexDirection: "row", alignItems: "center", gap: 8 },
   attachText: { fontSize: 14, fontWeight: "700", letterSpacing: 0.2 },
   intensityRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 18 },
   intensityLabel: { fontSize: 13, fontWeight: "600", marginRight: 10 },
@@ -47,4 +48,12 @@ export const styles = StyleSheet.create({
   },
   visibilityText: { fontSize: 12, fontWeight: "700", letterSpacing: 0.3 },
   ownerText: { textAlign: "center", fontWeight: "500", opacity: 0.6 },
+  moreInfoSection: { marginTop: 8, paddingTop: 18, borderTopWidth: 1 },
+  sectionTitle: { fontSize: 16, fontWeight: "700", marginBottom: 12 },
+  factBox: { flexDirection: "row", alignItems: "flex-start", padding: 16, borderRadius: borderRadius.md, marginBottom: 14 },
+  factIcon: { fontSize: 18, marginRight: 10, marginTop: 1 },
+  factText: { fontSize: 14, lineHeight: 20, fontWeight: "500", flex: 1 },
+  predominanceRow: { marginBottom: 14 },
+  predominanceLabel: { fontSize: 13, fontWeight: "700", textTransform: "uppercase", marginBottom: 4 },
+  predominanceValue: { fontSize: 15, fontWeight: "500", lineHeight: 21 },
 });

@@ -55,6 +55,8 @@ export default function useAromaForm(existingNames) {
       recommendedUsage: `Best for ${selectedMood.toLowerCase()} moments`,
       mood: selectedMood,
       visibility,
+      interestingFact: "",
+      predominance: "",
     };
   }, [name, description, selectedCategory, selectedMood, intensity, selectedEmoji, visibility]);
 

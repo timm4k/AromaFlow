@@ -13,6 +13,7 @@ export const styles = StyleSheet.create({
   cardContent: { flex: 1 },
   cardTitle: { ...typography.cardTitleCompact, marginBottom: 4 },
   cardBody: { ...typography.bodySm, lineHeight: 19, opacity: 0.7 },
+  readTime: { fontSize: 11, fontWeight: "600", marginTop: 4, opacity: 0.5 },
   shimmerCard: { flexDirection: "row", borderRadius: borderRadius.lg, padding: 14, marginBottom: 10 },
   shimmerCircle: { width: 48, height: 48, borderRadius: borderRadius.md, marginRight: 14, opacity: 0.5 },
   shimmerContent: { flex: 1, gap: 8, paddingTop: 4 },

@@ -12,6 +12,8 @@ export const aromas = [
     origin: 'Bulgaria, Turkey',
     recommendedUsage: 'Evening wear, romantic blends, floral perfumes',
     mood: 'Romantic and uplifting',
+    interestingFact: 'Rose oil is so precious that it takes about 60,000 roses to produce just 1 ounce of rose otto essential oil.',
+    predominance: 'Widely used in high-end perfumery, especially French and Middle Eastern fragrance traditions.',
   },
   {
     id: '2',
@@ -24,6 +26,8 @@ export const aromas = [
     origin: 'Mediterranean region',
     recommendedUsage: 'Sleep blends, relaxation, fresh sachets',
     mood: 'Calm and peaceful',
+    interestingFact: 'The name "lavender" comes from the Latin "lavare" meaning "to wash", as it was commonly added to Roman bathwater.',
+    predominance: 'Extensively cultivated in Provence, France; also thrives in England and Bulgaria.',
   },
   {
     id: '3',
@@ -36,6 +40,8 @@ export const aromas = [
     origin: 'Madagascar, Tahiti',
     recommendedUsage: 'Gourmand perfumes, cozy blends, aromatherapy',
     mood: 'Comforting and euphoric',
+    interestingFact: 'Vanilla orchids must be hand-pollinated, making vanilla the second most expensive spice in the world after saffron.',
+    predominance: 'Dominant in gourmand perfumery and widely used in baking and confectionery worldwide.',
   },
   {
     id: '4',
@@ -48,6 +54,8 @@ export const aromas = [
     origin: 'Sri Lanka, Indonesia',
     recommendedUsage: 'Winter blends, spicy perfumes, warming diffusers',
     mood: 'Warming and stimulating',
+    interestingFact: 'Cinnamon was more valuable than gold in medieval Europe and was used as a status symbol among the wealthy.',
+    predominance: 'A key spice in Middle Eastern, Indian, and Southeast Asian cuisines and perfumery.',
   },
   {
     id: '5',
@@ -60,6 +68,8 @@ export const aromas = [
     origin: 'Italy, Spain',
     recommendedUsage: 'Cleaning blends, citrus perfumes, morning diffusers',
     mood: 'Energizing and clarifying',
+    interestingFact: 'Cold-pressed lemon peel yields about 0.5-0.7% oil by weight — it takes approximately 3,000 lemons to produce 1 kg of oil.',
+    predominance: 'Essential in Mediterranean cleaning products and citrus-forward fragrances worldwide.',
   },
   {
     id: '6',
@@ -72,6 +82,8 @@ export const aromas = [
     origin: 'India, Egypt',
     recommendedUsage: 'Luxury perfumes, romantic blends, evening wear',
     mood: 'Sensual and confident',
+    interestingFact: 'Jasmine flowers are harvested at night when their scent is most potent, as they only release fragrance after dark.',
+    predominance: 'A cornerstone of Indian attars and French luxury perfumery, especially in Grasse.',
   },
   {
     id: '7',
@@ -84,6 +96,8 @@ export const aromas = [
     origin: 'India, Australia',
     recommendedUsage: 'Base notes, meditation, woody perfumes',
     mood: 'Grounding and meditative',
+    interestingFact: 'Indian sandalwood trees must be at least 15 years old before their roots develop the prized aromatic heartwood.',
+    predominance: 'Highly valued in Indian spiritual traditions, Japanese incense ceremonies, and fine perfumery.',
   },
   {
     id: '8',
@@ -96,6 +110,8 @@ export const aromas = [
     origin: 'United States, India',
     recommendedUsage: 'Focus blends, headache relief, refreshing sprays',
     mood: 'Invigorating and alert',
+    interestingFact: 'Peppermint is a natural hybrid of watermint and spearmint, first cultivated commercially in 18th-century England.',
+    predominance: 'Widely grown in the Pacific Northwest of the USA and in India\'s Himalayan region.',
   },
   {
     id: '9',
@@ -108,6 +124,8 @@ export const aromas = [
     origin: 'Brazil, Spain',
     recommendedUsage: 'Morning blends, children, citrus perfumes',
     mood: 'Happy and cheerful',
+    interestingFact: 'Sweet orange oil is the most widely produced essential oil in the world by volume.',
+    predominance: 'Ubiquitous in cleaning products, children\'s products, and cheerful citrus blends.',
   },
   {
     id: '10',
@@ -120,6 +138,8 @@ export const aromas = [
     origin: 'United States, Morocco',
     recommendedUsage: 'Base notes, woody perfumes, insect repellent blends',
     mood: 'Grounding and secure',
+    interestingFact: 'Cedarwood oil has been used for over 4,000 years — ancient Egyptians used it in embalming rituals.',
+    predominance: 'Prominent in masculine fragrances and meditation spaces, especially in North American perfumery.',
   },
   {
     id: '11',
@@ -132,6 +152,8 @@ export const aromas = [
     origin: 'Italy',
     recommendedUsage: 'Eau de cologne, tea blends, light perfumes',
     mood: 'Uplifting and refreshing',
+    interestingFact: 'Bergamot gives Earl Grey tea its distinctive flavor — the oil is pressed from the rind of a unique inedible citrus fruit.',
+    predominance: 'Signature note in classic eau de cologne and Italian perfumery traditions.',
   },
   {
     id: '12',
@@ -144,6 +166,8 @@ export const aromas = [
     origin: 'Madagascar, Comoros',
     recommendedUsage: 'Luxury perfumes, hair care, romantic blends',
     mood: 'Euphoric and relaxing',
+    interestingFact: 'The name "ylang-ylang" means "flower of flowers" in Tagalog; the tree can grow up to 20 meters tall.',
+    predominance: 'A staple in tropical perfumery and Indonesian traditional ceremonies.',
   },
   {
     id: '13',
@@ -156,6 +180,8 @@ export const aromas = [
     origin: 'Indonesia, Philippines',
     recommendedUsage: 'Base notes, oriental perfumes, meditation',
     mood: 'Centered and grounded',
+    interestingFact: 'Patchouli was a key note in the iconic 1960s counterculture movement and became synonymous with the hippie era.',
+    predominance: 'Widely used as a base note in oriental perfumes and in Indian incense traditions.',
   },
   {
     id: '14',
@@ -168,6 +194,8 @@ export const aromas = [
     origin: 'Australia, China',
     recommendedUsage: 'Respiratory blends, steam inhalation, cleaning',
     mood: 'Clear and revitalized',
+    interestingFact: 'Eucalyptus oil is the only essential oil that can kill the influenza virus on contact in laboratory tests.',
+    predominance: 'Native to Australia, where over 700 species exist; widely used in respiratory and cleaning products.',
   },
   {
     id: '15',
@@ -180,6 +208,8 @@ export const aromas = [
     origin: 'United States, Israel',
     recommendedUsage: 'Morning blends, detox diffusers, citrus perfumes',
     mood: 'Energizing and optimistic',
+    interestingFact: 'Grapefruit oil is phototoxic due to bergamottin content, so it should not be applied before sun exposure.',
+    predominance: 'Popular in morning blends and detox aromatherapy, especially in American perfumery.',
   },
   {
     id: '16',
@@ -192,6 +222,8 @@ export const aromas = [
     origin: 'Somalia, Oman',
     recommendedUsage: 'Meditation, spiritual practices, oriental perfumes',
     mood: 'Spiritual and contemplative',
+    interestingFact: 'Frankincense was valued more than gold on the ancient Silk Road and has been used in spiritual practices for over 5,000 years.',
+    predominance: 'Central to religious ceremonies in the Middle East, Ethiopia, and the Mediterranean.',
   },
   {
     id: '17',
@@ -204,6 +236,8 @@ export const aromas = [
     origin: 'Egypt, China',
     recommendedUsage: 'Skincare blends, floral perfumes, hormonal balance',
     mood: 'Balancing and soothing',
+    interestingFact: 'Geranium oil is often used as a more affordable substitute for rose oil in commercial perfumery.',
+    predominance: 'Highly valued in French aromatherapy and skincare formulations worldwide.',
   },
   {
     id: '18',
@@ -216,6 +250,8 @@ export const aromas = [
     origin: 'India, Vietnam',
     recommendedUsage: 'Spicy perfumes, warming massage blends, gourmands',
     mood: 'Stimulating and adventurous',
+    interestingFact: 'Black pepper was known as "black gold" in ancient Rome and was used to pay taxes and tribute.',
+    predominance: 'A foundational spice in cuisines worldwide and increasingly popular in spicy modern perfumery.',
   },
   {
     id: '19',
@@ -228,6 +264,8 @@ export const aromas = [
     origin: 'England, Egypt',
     recommendedUsage: 'Sleep blends, children, sensitive skin care',
     mood: 'Calm and sleepy',
+    interestingFact: 'Roman chamomile was called "ground apple" by ancient Greeks because of its apple-like scent — the name comes from "kamai" (ground) and "melon" (apple).',
+    predominance: 'Extensively used in herbal medicine and children\'s products across Europe and North America.',
   },
   {
     id: '20',
@@ -240,6 +278,8 @@ export const aromas = [
     origin: 'Somalia, Yemen',
     recommendedUsage: 'Spiritual blends, oriental perfumes, meditation',
     mood: 'Contemplative and protective',
+    interestingFact: 'Myrrh was one of the gifts brought by the Magi to the infant Jesus and has been used in burial rites since ancient Egypt.',
+    predominance: 'Integral to Middle Eastern perfume traditions and Ethiopian Orthodox Church ceremonies.',
   },
   {
     id: '21',
@@ -252,6 +292,8 @@ export const aromas = [
     origin: 'Indonesia, Madagascar',
     recommendedUsage: 'Winter blends, spicy perfumes, dental care',
     mood: 'Warming and fortified',
+    interestingFact: 'In medieval Europe, clove-studded oranges were used as pomanders to ward off plague and bad odors.',
+    predominance: 'A defining spice in Indonesian cuisine (the key to kretek cigarettes) and winter perfumery.',
   },
   {
     id: '22',
@@ -264,6 +306,8 @@ export const aromas = [
     origin: 'Tunisia, Morocco',
     recommendedUsage: 'Luxury perfumes, bridal blends, sensitive skin',
     mood: 'Radiant and serene',
+    interestingFact: 'Neroli oil is named after the 17th-century Italian princess Anne Marie Orsini of Nerola, who popularized it as a personal fragrance.',
+    predominance: 'Cherished in French luxury perfumery and traditional Mediterranean skincare.',
   },
   {
     id: '23',
@@ -276,6 +320,8 @@ export const aromas = [
     origin: 'Canada, United States',
     recommendedUsage: 'Cleaning blends, focus diffusers, herbal perfumes',
     mood: 'Focused and clear',
+    interestingFact: 'Cedar leaf oil has a completely different scent profile from cedarwood — it is much greener and more herbal.',
+    predominance: 'Commonly used in Canadian forest-inspired cleaning and wellness products.',
   },
   {
     id: '24',
@@ -288,6 +334,8 @@ export const aromas = [
     origin: 'Austria, Russia',
     recommendedUsage: 'Respiratory blends, forest perfumes, cleaning',
     mood: 'Invigorated and refreshed',
+    interestingFact: 'Pine oil has been used in traditional Finnish saunas for centuries as a purifying and invigorating addition.',
+    predominance: 'Dominant in Scandinavian forest-inspired products and respiratory aromatherapy.',
   },
   {
     id: '25',
@@ -300,6 +348,8 @@ export const aromas = [
     origin: 'India, Mexico',
     recommendedUsage: 'Luxury perfumes, evening wear, floral blends',
     mood: 'Sensual and mesmerizing',
+    interestingFact: 'Tuberose flowers are so intensely fragrant at night that they can cause headaches if kept indoors while blooming.',
+    predominance: 'A hallmark of classic French luxury perfumery and Indian traditional garlands.',
   },
   {
     id: '26',
@@ -312,6 +362,8 @@ export const aromas = [
     origin: 'India, Guatemala',
     recommendedUsage: 'Cleaning blends, insect repellent, fresh perfumes',
     mood: 'Refreshed and purified',
+    interestingFact: 'Lemongrass contains citronella and is one of nature\'s most effective mosquito repellents — used in Southeast Asia for centuries.',
+    predominance: 'Ubiquitous in Thai cuisine and tropical cleaning products across Asia and the Americas.',
   },
   {
     id: '27',
@@ -324,6 +376,8 @@ export const aromas = [
     origin: 'Russia, India',
     recommendedUsage: 'Spicy perfumes, gourmand blends, digestive aids',
     mood: 'Comforted and grounded',
+    interestingFact: 'Coriander seed and leaf (cilantro) have dramatically different flavors due to different aldehyde compounds — some people have a genetic sensitivity to the leaf.',
+    predominance: 'A bridging note in spicy-floral perfumery and essential in Indian spice blends.',
   },
   {
     id: '28',
@@ -336,6 +390,8 @@ export const aromas = [
     origin: 'Paraguay, France',
     recommendedUsage: 'Eau de cologne, light perfumes, skincare',
     mood: 'Refined and poised',
+    interestingFact: 'Petitgrain means "little grain" in French, referring to the small unripe fruits that were originally distilled to produce the oil.',
+    predominance: 'A classic ingredient in eau de cologne and traditional French perfumery.',
   },
   {
     id: '29',
@@ -348,6 +404,8 @@ export const aromas = [
     origin: 'France, Italy',
     recommendedUsage: 'Forest perfumes, meditation, respiratory blends',
     mood: 'Steadfast and tranquil',
+    interestingFact: 'Cypress trees have been planted in Mediterranean cemeteries since ancient Roman times, symbolizing mourning and eternity.',
+    predominance: 'Characteristic of Tuscan and Mediterranean landscape-inspired fragrances.',
   },
   {
     id: '30',
@@ -360,5 +418,7 @@ export const aromas = [
     origin: 'Guatemala, India',
     recommendedUsage: 'Spicy perfumes, chai blends, aromatherapy',
     mood: 'Uplifted and energized',
+    interestingFact: 'Cardamom is the third most expensive spice by weight and was called "grains of paradise" in medieval European trade.',
+    predominance: 'Essential in Middle Eastern coffee traditions, Indian chai, and Nordic baking.',
   },
 ];

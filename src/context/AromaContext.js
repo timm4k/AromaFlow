@@ -28,6 +28,7 @@ export function AromaProvider({ children }) {
   const [publicAromas, setPublicAromas] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [subscriptionsReady, setSubscriptionsReady] = useState(0);
+  const [subscriptionError, setSubscriptionError] = useState(null);
   const userIdRef = useRef(null);
 
   useEffect(() => {
@@ -58,14 +59,24 @@ export function AromaProvider({ children }) {
     const userId = currentUser?.uid;
 
     setSubscriptionsReady(0);
+    const publicFired = { current: false };
+    const myFired = { current: false };
 
     const unsub1 = subscribePublicAromas(
       (list) => {
         setPublicAromas(list);
-        setSubscriptionsReady((prev) => prev + 1);
+        if (!publicFired.current) {
+          publicFired.current = true;
+          setSubscriptionsReady((prev) => prev + 1);
+        }
       },
       (error) => {
-        console.warn("Public aromas subscription error", error);
+        console.error("Public aromas subscription error", error);
+        setSubscriptionError(error.message || "Failed to load public aromas");
+        if (!publicFired.current) {
+          publicFired.current = true;
+          setSubscriptionsReady((prev) => prev + 1);
+        }
       },
     );
 
@@ -81,10 +92,18 @@ export function AromaProvider({ children }) {
       userId,
       (list) => {
         setCustomAromas(list);
-        setSubscriptionsReady((prev) => prev + 1);
+        if (!myFired.current) {
+          myFired.current = true;
+          setSubscriptionsReady((prev) => prev + 1);
+        }
       },
       (error) => {
-        console.warn("My aromas subscription error", error);
+        console.error("My aromas subscription error", error);
+        setSubscriptionError(error.message || "Failed to load your aromas");
+        if (!myFired.current) {
+          myFired.current = true;
+          setSubscriptionsReady((prev) => prev + 1);
+        }
       },
     );
 
@@ -94,7 +113,7 @@ export function AromaProvider({ children }) {
     };
   }, [currentUser?.uid]);
 
-  const ready = subscriptionsReady >= 2 || subscriptionsReady >= 1;
+  const ready = currentUser ? subscriptionsReady >= 2 : subscriptionsReady >= 1;
 
   useEffect(() => {
     const userId = currentUser?.uid || "guest";
@@ -182,6 +201,7 @@ export function AromaProvider({ children }) {
         favorites,
         allNames,
         ready,
+        subscriptionError,
         onToggleFavorite,
         onAddAroma,
         onDeleteAroma,

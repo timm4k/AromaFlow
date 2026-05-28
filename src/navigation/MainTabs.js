@@ -1,14 +1,11 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { StyleSheet, Text, View } from "react-native";
 
-import AromasScreen from "../screens/AromasScreen";
 import CommunityScreen from "../screens/CommunityScreen";
 import InspirationScreen from "../screens/InspirationScreen";
-import MyAromasScreen from "../screens/MyAromasScreen";
-import AddAromaScreen from "../screens/AddAromaScreen";
 import SettingsScreen from "../screens/SettingsScreen";
+import { AromasTab, MyAromasTab, AddTab } from "./tabScreens";
 import { useTheme } from "../context/ThemeContext";
-import { useAromas } from "../context/AromaContext";
 import { shadows } from "../styles/shadows";
 import { borderRadius } from "../styles/spacing";
 import { withOpacity } from "../utils/colorHelpers";
@@ -27,66 +24,6 @@ function TabIcon({ icon, focused, accent }) {
         {icon}
       </Text>
     </View>
-  );
-}
-
-function AromasTab() {
-  const {
-    theme,
-    compactCards,
-    showEmojis,
-    enableAnimations,
-    favoritesOnly,
-  } = useTheme();
-  const { favorites, onToggleFavorite } = useAromas();
-
-  return (
-    <AromasScreen
-      theme={theme}
-      compactCards={compactCards}
-      favorites={favorites}
-      favoritesOnly={favoritesOnly}
-      onToggleFavorite={onToggleFavorite}
-      showEmojis={showEmojis}
-      enableAnimations={enableAnimations}
-    />
-  );
-}
-
-function MyAromasTab() {
-  const { theme, enableAnimations } = useTheme();
-  const {
-    myAromas,
-    favorites,
-    onToggleFavorite,
-    onDeleteAroma,
-    onUpdateAroma,
-  } = useAromas();
-
-  return (
-    <MyAromasScreen
-      theme={theme}
-      customAromas={myAromas}
-      favorites={favorites}
-      onToggleFavorite={onToggleFavorite}
-      onDeleteAroma={onDeleteAroma}
-      onUpdateAroma={onUpdateAroma}
-      enableAnimations={enableAnimations}
-    />
-  );
-}
-
-function AddTab() {
-  const { theme, enableAnimations } = useTheme();
-  const { onAddAroma, allNames } = useAromas();
-
-  return (
-    <AddAromaScreen
-      theme={theme}
-      onAdd={onAddAroma}
-      existingNames={allNames}
-      enableAnimations={enableAnimations}
-    />
   );
 }
 

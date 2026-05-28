@@ -4,7 +4,6 @@ import {
   doc,
   getDoc,
   onSnapshot,
-  orderBy,
   query,
   setDoc,
   updateDoc,
@@ -18,11 +17,15 @@ export function subscribePublicAromas(onData, onError) {
   const q = query(
     collection(db, AROMAS_COLLECTION),
     where("visibility", "==", "public"),
-    orderBy("createdAt", "desc"),
   );
 
   return onSnapshot(q, (snapshot) => {
-    const list = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+    const list = snapshot.docs
+      .map((d) => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    console.log(
+      `[subscribePublicAromas] received ${list.length} docs`,
+    );
     onData(list);
   }, onError);
 }
@@ -31,11 +34,15 @@ export function subscribeMyAromas(ownerId, onData, onError) {
   const q = query(
     collection(db, AROMAS_COLLECTION),
     where("ownerId", "==", ownerId),
-    orderBy("createdAt", "desc"),
   );
 
   return onSnapshot(q, (snapshot) => {
-    const list = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+    const list = snapshot.docs
+      .map((d) => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    console.log(
+      `[subscribeMyAromas] ownerId=${ownerId}, received ${list.length} docs`,
+    );
     onData(list);
   }, onError);
 }
@@ -74,6 +81,8 @@ export async function addAroma(aroma) {
   };
 
   await setDoc(ref, data);
+
+  console.log(`[addAroma] created doc ${ref.id}`, data);
 
   return { id: ref.id, ...data };
 }

@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { ScrollView, View } from "react-native";
+import { Alert, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import CustomButton from "../components/CustomButton";
@@ -36,11 +36,15 @@ export default function AddAromaScreen({
     buildPayload,
   } = useAromaForm(existingNames);
 
-  function handleAdd() {
+  async function handleAdd() {
     if (!canSubmit) return;
 
-    onAdd(buildPayload());
-    reset();
+    try {
+      await onAdd(buildPayload());
+      reset();
+    } catch (e) {
+      Alert.alert("Error", "Failed to save aroma. Please try again.");
+    }
   }
 
   return (
