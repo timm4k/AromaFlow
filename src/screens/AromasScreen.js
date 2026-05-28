@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import AromaCard from "../components/AromaCard";
 import AromaModal from "../components/AromaModal";
 import CategoryFilter from "../components/CategoryFilter";

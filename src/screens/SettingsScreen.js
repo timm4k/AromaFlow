@@ -1,8 +1,8 @@
 import { useCallback, useState } from "react";
 import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useAuth } from "../context/AuthContext";
-import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../hooks/useAuth";
+import { useTheme } from "../hooks/useTheme";
 import ScreenHeader from "../components/ScreenHeader";
 import SettingItem from "../components/SettingItem";
 import SectionHeader from "../components/SectionHeader";
@@ -16,7 +16,8 @@ export default function SettingsScreen() {
   const { theme, darkMode, setDarkMode, pastelMode, setPastelMode,
     favoritesOnly, setFavoritesOnly, compactCards, setCompactCards,
     accentIntensity, setAccentIntensity, showEmojis, setShowEmojis,
-    enableAnimations, setEnableAnimations, fontSize, setFontSize } = useTheme();
+    enableAnimations, setEnableAnimations, fontSize, setFontSize,
+    sessionOnly, setSessionOnly } = useTheme();
   const [calendarInstalled, setCalendarInstalled] = useState(null);
   const [checkingCalendar, setCheckingCalendar] = useState(false);
 
@@ -128,6 +129,13 @@ export default function SettingsScreen() {
       <SettingsSection theme={theme}>
         <SettingItem title="Favorites Only" value={favoritesOnly} onToggle={setFavoritesOnly} type="switch" theme={theme} />
         <SettingItem title="Show Emojis" value={showEmojis} onToggle={setShowEmojis} type="switch" theme={theme} />
+        <SettingItem title="Session Only" value={sessionOnly} onToggle={setSessionOnly} type="switch" theme={theme} />
+
+        {sessionOnly && (
+          <Text style={[styles.sessionHint, { color: theme.textSecondary }]}>
+            Settings and favorites won't be saved after you close the app
+          </Text>
+        )}
       </SettingsSection>
 
       <SectionHeader title="Interface" theme={theme} />

@@ -2,11 +2,10 @@ import { StatusBar } from "expo-status-bar";
 import { NavigationContainer } from "@react-navigation/native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-import { AuthProvider } from "./src/context/AuthContext";
-import { ThemeProvider, useTheme } from "./src/context/ThemeContext";
-import { AromaProvider } from "./src/context/AromaContext";
+import useSettingsStore from "./src/store/settingsStore";
+import { getTheme } from "./src/styles/colors";
 import AppNavigator from "./src/navigation/AppNavigator";
+import StoreSubscriber from "./src/components/StoreSubscriber";
 import ErrorBoundary from "./src/components/ErrorBoundary";
 import { getNavigationTheme } from "./src/navigation/navigationTheme";
 
@@ -21,13 +20,13 @@ const queryClient = new QueryClient({
 });
 
 function AppContent() {
-  const { theme, darkMode } = useTheme();
+  const { darkMode, pastelMode, accentIntensity, fontSize } = useSettingsStore();
+  const theme = getTheme(darkMode, pastelMode, accentIntensity, fontSize);
   const navigationTheme = getNavigationTheme(theme, darkMode);
 
   return (
     <SafeAreaProvider>
       <StatusBar style={darkMode ? "light" : "dark"} />
-
       <NavigationContainer theme={navigationTheme}>
         <AppNavigator />
       </NavigationContainer>
@@ -39,13 +38,8 @@ export default function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <ThemeProvider>
-            <AromaProvider>
-              <AppContent />
-            </AromaProvider>
-          </ThemeProvider>
-        </AuthProvider>
+        <AppContent />
+        <StoreSubscriber />
       </QueryClientProvider>
     </ErrorBoundary>
   );

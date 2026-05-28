@@ -3,8 +3,8 @@ import {
   ScrollView, Text, TouchableOpacity, View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useAuth } from "../context/AuthContext";
-import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../hooks/useAuth";
+import { useTheme } from "../hooks/useTheme";
 import useAuthForm from "../hooks/useAuthForm";
 import useEntranceAnimation from "../hooks/useEntranceAnimation";
 import AuthInput from "../components/auth/AuthInput";

@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useAuth } from "../context/AuthContext";
-import { useAromas } from "../context/AromaContext";
-import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../hooks/useAuth";
+import { useAromas } from "../hooks/useAromas";
+import { useTheme } from "../hooks/useTheme";
 import AromaCard from "../components/AromaCard";
 import AromaModal from "../components/AromaModal";
 import ConfirmationModal from "../components/ConfirmationModal";

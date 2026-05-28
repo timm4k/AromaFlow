@@ -11,7 +11,7 @@ import SearchBar from "../components/SearchBar";
 import CustomAromaCard from "../components/aroma/CustomAromaCard";
 
 import { categories } from "../data/aromas";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import { styles } from "../styles/screens/myAromasStyles";
 
 export default function MyAromasScreen({

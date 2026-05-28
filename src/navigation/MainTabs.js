@@ -5,7 +5,7 @@ import CommunityScreen from "../screens/CommunityScreen";
 import InspirationScreen from "../screens/InspirationScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import { AromasTab, MyAromasTab, AddTab } from "./tabScreens";
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../hooks/useTheme";
 import { shadows } from "../styles/shadows";
 import { borderRadius } from "../styles/spacing";
 import { withOpacity } from "../utils/colorHelpers";

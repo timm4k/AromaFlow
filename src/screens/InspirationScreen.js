@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import { FlatList, RefreshControl } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../hooks/useTheme";
 import { usePosts } from "../queries/usePosts";
 import ScreenHeader from "../components/ScreenHeader";
 import EmptyState from "../components/EmptyState";

@@ -1,11 +1,13 @@
-import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "../context/ThemeContext";
-import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../hooks/useTheme";
+import { useAuth } from "../hooks/useAuth";
 import useAromaDetails from "../hooks/useAromaDetails";
 import useImageUpload from "../hooks/useImageUpload";
 import EmptyState from "../components/EmptyState";
 import ConfirmModal from "../components/common/ConfirmModal";
+import ImageSection from "../components/details/ImageSection";
+import DetailRow from "../components/details/DetailRow";
 import { styles } from "../styles/screens/aromaDetailsStyles";
 
 export default function AromaDetailsScreen({ route, navigation }) {
@@ -174,47 +176,4 @@ export default function AromaDetailsScreen({ route, navigation }) {
   );
 }
 
-function ImageSection({ aroma, isOwner, previewUri, pickImage, removeImage, theme }) {
-  const displayUri = previewUri || aroma.imageUri;
 
-  if (displayUri) {
-    return (
-      <View style={styles.imageSection}>
-        <Image source={{ uri: displayUri }} style={styles.aromaImage} resizeMode="cover" />
-
-        {isOwner && !previewUri && (
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={removeImage}
-            style={[styles.imageActionBtn, { backgroundColor: theme.error }]}
-          >
-            <Text style={styles.imageActionText}>Remove Image</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-    );
-  }
-
-  if (isOwner) {
-    return (
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={pickImage}
-        style={[styles.attachButton, { backgroundColor: theme.accentLight, borderColor: theme.accent }]}
-      >
-        <Text style={[styles.attachText, { color: theme.accent }]}>+ Attach Image</Text>
-      </TouchableOpacity>
-    );
-  }
-
-  return null;
-}
-
-function DetailRow({ label, value, valueColor, theme }) {
-  return (
-    <View style={styles.detailRow}>
-      <Text style={[styles.detailLabel, { color: theme.text, fontSize: 13 * theme.fontScale }]}>{label}</Text>
-      <Text style={[styles.detailValue, { color: valueColor || theme.textSecondary }]}>{value}</Text>
-    </View>
-  );
-}

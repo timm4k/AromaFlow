@@ -1,5 +1,5 @@
-import { useTheme } from "../context/ThemeContext";
-import { useAromas } from "../context/AromaContext";
+import { useTheme } from "../hooks/useTheme";
+import { useAromas } from "../hooks/useAromas";
 import AromasScreen from "../screens/AromasScreen";
 import MyAromasScreen from "../screens/MyAromasScreen";
 import AddAromaScreen from "../screens/AddAromaScreen";

@@ -1,5 +1,5 @@
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../hooks/useTheme";
 import { borderRadius, spacing } from "../../styles/spacing";
 
 export default function ConfirmModal({ visible, title, message, confirmText, cancelText, onConfirm, onCancel }) {
