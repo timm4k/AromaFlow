@@ -90,7 +90,7 @@ export default function MyAromasScreen({
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.list}
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
           <CustomAromaCard
             item={item}
             theme={theme}
@@ -100,6 +100,7 @@ export default function MyAromasScreen({
             onToggleFavorite={() => onToggleFavorite(item.id)}
             enableAnimations={enableAnimations}
             onToggleVisibility={handleToggleVisibility}
+            index={index}
           />
         )}
         ListEmptyComponent={

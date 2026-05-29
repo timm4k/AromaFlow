@@ -1,4 +1,3 @@
-import { useEffect, useRef } from "react";
 import {
   Animated,
   StyleSheet,
@@ -10,6 +9,7 @@ import {
 import { shadows } from "../styles/shadows";
 import { borderRadius } from "../styles/spacing";
 import { typography } from "../styles/typography";
+import useCardAnimation from "../hooks/useCardAnimation";
 
 export default function AromaCard({
   title,
@@ -23,43 +23,17 @@ export default function AromaCard({
   favorited,
   onToggleFavorite,
   enableAnimations,
+  index,
 }) {
   const dots = Array.from(
     { length: 5 },
     (_, i) => i < (intensity || 0),
   );
 
-  const scale = useRef(new Animated.Value(1)).current;
-  const fadeIn = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    const dur = enableAnimations ? 400 : 0;
-
-    Animated.timing(fadeIn, {
-      toValue: 1,
-      duration: dur,
-      useNativeDriver: true,
-    }).start();
-  }, []);
-
-  const onPressIn = () => {
-    Animated.spring(scale, {
-      toValue: enableAnimations ? 0.97 : 1,
-      friction: 8,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const onPressOut = () => {
-    Animated.spring(scale, {
-      toValue: 1,
-      friction: 5,
-      useNativeDriver: true,
-    }).start();
-  };
+  const { animatedStyle, onPressIn, onPressOut } = useCardAnimation({ index, enabled: enableAnimations });
 
   return (
-    <Animated.View style={{ transform: [{ scale }], opacity: fadeIn }}>
+    <Animated.View style={animatedStyle}>
       <TouchableOpacity
         activeOpacity={0.75}
         onPress={onPress}

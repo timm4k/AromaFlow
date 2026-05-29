@@ -58,7 +58,7 @@ export default function CommunityScreen() {
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.list}
-        renderItem={({ item }) => {
+        renderItem={({ item, index }) => {
           const isOwner = currentUser && item.ownerId === currentUser.uid;
 
           return (
@@ -75,6 +75,7 @@ export default function CommunityScreen() {
                 favorited={favorites.includes(item.id)}
                 onToggleFavorite={() => onToggleFavorite(item.id)}
                 enableAnimations={enableAnimations}
+                index={index}
               />
 
               <View style={styles.ownerRow}>

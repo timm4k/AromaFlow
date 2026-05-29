@@ -1,45 +1,19 @@
-import { useEffect, useRef } from "react";
-import { Animated, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
+import { Animated } from "react-native";
 import { shadows } from "../../styles/shadows";
 import { styles } from "../../styles/screens/myAromasStyles";
+import useCardAnimation from "../../hooks/useCardAnimation";
 
 export default function CustomAromaCard({
   item, theme, onPress, onDelete, favorited,
-  onToggleFavorite, enableAnimations, onToggleVisibility,
+  onToggleFavorite, enableAnimations, onToggleVisibility, index,
 }) {
-  const scale = useRef(new Animated.Value(1)).current;
-  const fadeIn = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    const dur = enableAnimations ? 400 : 0;
-
-    Animated.timing(fadeIn, {
-      toValue: 1,
-      duration: dur,
-      useNativeDriver: true,
-    }).start();
-  }, [enableAnimations, fadeIn]);
-
-  const onPressIn = () => {
-    Animated.spring(scale, {
-      toValue: enableAnimations ? 0.97 : 1,
-      friction: 8,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const onPressOut = () => {
-    Animated.spring(scale, {
-      toValue: 1,
-      friction: 5,
-      useNativeDriver: true,
-    }).start();
-  };
+  const { animatedStyle, onPressIn, onPressOut } = useCardAnimation({ index, enabled: enableAnimations });
 
   const dots = Array.from({ length: 5 }, (_, i) => i < (item.intensity || 0));
 
   return (
-    <Animated.View style={{ transform: [{ scale }], opacity: fadeIn }}>
+    <Animated.View style={animatedStyle}>
       <TouchableOpacity
         activeOpacity={0.75}
         onPress={onPress}

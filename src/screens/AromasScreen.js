@@ -84,7 +84,7 @@ export default function AromasScreen({
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.list}
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
           <AromaCard
             title={item.title}
             category={item.category}
@@ -97,6 +97,7 @@ export default function AromasScreen({
             favorited={favorites.includes(item.id)}
             onToggleFavorite={() => onToggleFavorite(item.id)}
             enableAnimations={enableAnimations}
+            index={index}
           />
         )}
       />

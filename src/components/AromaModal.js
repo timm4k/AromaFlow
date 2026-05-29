@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import {
   Animated, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View,
 } from "react-native";
@@ -16,27 +16,45 @@ export default function AromaModal({
 
   const overlayOpacity = useRef(new Animated.Value(0)).current;
   const sheetTranslate = useRef(new Animated.Value(300)).current;
+  const sheetScale = useRef(new Animated.Value(0.95)).current;
+  const closing = useRef(false);
 
   useEffect(() => {
     if (visible) {
+      closing.current = false;
       const dur = enableAnimations ? 300 : 0;
       Animated.parallel([
         Animated.timing(overlayOpacity, { toValue: 1, duration: dur, useNativeDriver: true }),
         Animated.timing(sheetTranslate, { toValue: 0, duration: dur, useNativeDriver: true }),
+        Animated.spring(sheetScale, { toValue: 1, friction: 8, useNativeDriver: true }),
       ]).start();
-    } else {
+    } else if (!closing.current) {
       overlayOpacity.setValue(0);
       sheetTranslate.setValue(300);
+      sheetScale.setValue(0.95);
     }
   }, [visible, enableAnimations]);
 
+  const handleClose = useCallback(() => {
+    if (closing.current) return;
+    closing.current = true;
+    const dur = enableAnimations ? 200 : 0;
+    Animated.parallel([
+      Animated.timing(overlayOpacity, { toValue: 0, duration: dur, useNativeDriver: true }),
+      Animated.timing(sheetTranslate, { toValue: 300, duration: dur, useNativeDriver: true }),
+      Animated.timing(sheetScale, { toValue: 0.95, duration: dur, useNativeDriver: true }),
+    ]).start(() => {
+      onClose();
+    });
+  }, [enableAnimations, overlayOpacity, sheetTranslate, sheetScale, onClose]);
+
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+    <Modal visible={visible} transparent animationType="none" onRequestClose={handleClose}>
       <Animated.View style={[styles.overlay, { backgroundColor: theme.overlay, opacity: overlayOpacity }]}>
         <Animated.View
-          style={[styles.sheet, { backgroundColor: theme.card, shadowColor: theme.shadow, transform: [{ translateY: sheetTranslate }] }, shadows.modal]}
+          style={[styles.sheet, { backgroundColor: theme.card, shadowColor: theme.shadow, transform: [{ translateY: sheetTranslate }, { scale: sheetScale }] }, shadows.modal]}
         >
-          <TouchableOpacity onPress={onClose} activeOpacity={0.7} style={styles.closeButton}>
+          <TouchableOpacity onPress={handleClose} activeOpacity={0.7} style={styles.closeButton}>
             <Text style={[styles.closeText, { color: theme.textSecondary }]}>✕</Text>
           </TouchableOpacity>
 
@@ -46,7 +64,7 @@ export default function AromaModal({
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={() => {
-                onClose();
+                handleClose();
                 navigation.navigate("AromaDetails", { aromaId: aroma.id });
               }}
               style={[styles.viewDetailsBtn, { backgroundColor: theme.accent }]}
