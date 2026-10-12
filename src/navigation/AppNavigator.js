@@ -1,11 +1,12 @@
-import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
+import FeedbackScreen from "../form-elements-and-validation/FeedbackScreen";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
-import LoginScreen from "../screens/LoginScreen";
-import RegisterScreen from "../screens/RegisterScreen";
 import AromaDetailsScreen from "../screens/AromaDetailsScreen";
 import InspirationDetailsScreen from "../screens/InspirationDetailsScreen";
+import LoginScreen from "../screens/LoginScreen";
+import RegisterScreen from "../screens/RegisterScreen";
 import MainTabs from "./MainTabs";
 
 const Stack = createNativeStackNavigator();
@@ -59,6 +60,11 @@ export default function AppNavigator() {
           />
         </>
       )}
+      <Stack.Screen
+        name="Feedback"
+        component={FeedbackScreen}
+        options={{ animation: "slide_from_right" }}
+      />
     </Stack.Navigator>
   );
 }

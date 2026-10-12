@@ -1,9 +1,9 @@
 import { create } from "zustand";
 import {
-  onAuthChanged,
   registerUser as fbRegister,
   signIn as fbSignIn,
   signOut as fbSignOut,
+  onAuthChanged,
 } from "../firebase/authService";
 
 const useAuthStore = create((set) => ({

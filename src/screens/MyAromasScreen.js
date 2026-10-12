@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { FlatList, View } from "react-native";
+import { Alert, FlatList, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import AromaModal from "../components/AromaModal";
@@ -13,10 +13,16 @@ import CustomAromaCard from "../components/aroma/CustomAromaCard";
 import { categories } from "../data/aromas";
 import { useAuth } from "../hooks/useAuth";
 import { styles } from "../styles/screens/myAromasStyles";
+import { filterAromas } from "../utils/filterAromas";
 
 export default function MyAromasScreen({
-  theme, customAromas, favorites, onToggleFavorite,
-  onDeleteAroma, onUpdateAroma, enableAnimations,
+  theme,
+  customAromas,
+  favorites,
+  onToggleFavorite,
+  onDeleteAroma,
+  onUpdateAroma,
+  enableAnimations,
 }) {
   const insets = useSafeAreaInsets();
   const { currentUser } = useAuth();
@@ -25,40 +31,44 @@ export default function MyAromasScreen({
   const [selectedAroma, setSelectedAroma] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
 
-  const filtered = useMemo(() => {
-    const query = searchQuery.toLowerCase().trim();
+  const filtered = useMemo(
+    () => filterAromas(customAromas, searchQuery, selectedCategory),
+    [searchQuery, selectedCategory, customAromas],
+  );
 
-    return customAromas.filter((aroma) => {
-      const matchesSearch =
-        query === "" ||
-        aroma.title.toLowerCase().includes(query) ||
-        aroma.category.toLowerCase().includes(query);
-
-      const matchesCategory =
-        selectedCategory === "All" || aroma.category === selectedCategory;
-
-      return matchesSearch && matchesCategory;
-    });
-  }, [searchQuery, selectedCategory, customAromas]);
-
-  function handleConfirmDelete() {
+  async function handleConfirmDelete() {
     if (!deleteTarget) return;
 
-    onDeleteAroma(deleteTarget.id);
-    setDeleteTarget(null);
+    try {
+      await onDeleteAroma(deleteTarget.id);
+      setDeleteTarget(null);
+      if (selectedAroma?.id === deleteTarget.id) setSelectedAroma(null);
+    } catch {
+      Alert.alert("Could not delete aroma", "Please try again");
+    }
   }
 
-  function handleToggleVisibility(aroma) {
+  async function handleToggleVisibility(aroma) {
     const newVis = aroma.visibility === "public" ? "private" : "public";
 
-    onUpdateAroma(aroma.id, { visibility: newVis });
+    try {
+      await onUpdateAroma(aroma.id, { visibility: newVis });
+    } catch {
+      Alert.alert("Could not update visibility", "Please try again");
+    }
   }
 
   if (customAromas.length === 0) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.bg, paddingTop: insets.top + 12 }]}>
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: theme.bg, paddingTop: insets.top + 12 },
+        ]}
+      >
         <EmptyState
-          emoji="🧪" title="No custom aromas yet"
+          emoji="🧪"
+          title="No custom aromas yet"
           subtitle="Create your first aroma note"
           theme={theme}
         />
@@ -105,7 +115,8 @@ export default function MyAromasScreen({
         )}
         ListEmptyComponent={
           <EmptyState
-            emoji="🔍" title="No matches found"
+            emoji="🔍"
+            title="No matches found"
             subtitle="Try a different search or category"
             theme={theme}
           />

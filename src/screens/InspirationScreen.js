@@ -1,18 +1,24 @@
-import { View } from "react-native";
-import { FlatList, RefreshControl } from "react-native";
+import { FlatList, RefreshControl, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "../hooks/useTheme";
-import { usePosts } from "../queries/usePosts";
-import ScreenHeader from "../components/ScreenHeader";
+import ShimmerPlaceholder from "../components/common/ShimmerPlaceholder";
 import EmptyState from "../components/EmptyState";
 import InspirationCard from "../components/inspiration/InspirationCard";
-import ShimmerPlaceholder from "../components/common/ShimmerPlaceholder";
+import ScreenHeader from "../components/ScreenHeader";
+import { useTheme } from "../hooks/useTheme";
+import { usePosts } from "../queries/usePosts";
 import { styles } from "../styles/screens/inspirationStyles";
 
 export default function InspirationScreen() {
   const insets = useSafeAreaInsets();
   const { theme, enableAnimations } = useTheme();
-  const { data: posts, isLoading, isError, error, refetch, isRefetching } = usePosts();
+  const {
+    data: posts,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    isRefetching,
+  } = usePosts();
 
   return (
     <View style={[styles.container, { backgroundColor: theme.bg }]}>
@@ -33,7 +39,9 @@ export default function InspirationScreen() {
         <EmptyState
           emoji="⚠️"
           title="Could not load inspirations"
-          subtitle={error?.message || "Something went wrong. Pull down to retry."}
+          subtitle={
+            error?.message || "Something went wrong. Pull down to retry."
+          }
           theme={theme}
         />
       ) : (

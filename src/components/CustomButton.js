@@ -1,4 +1,6 @@
-import { useRef } from "react";
+import { useEffect, useState } from "react";
+import { borderRadius, spacing } from "../styles/spacing";
+import { shadows } from "../styles/shadows";
 import { Animated, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 export default function CustomButton({
@@ -14,6 +16,8 @@ export default function CustomButton({
   return (
     <Animated.View style={{ transform: [{ scale }] }}>
       <TouchableOpacity
+        accessibilityRole="button"
+        accessibilityState={{ disabled }}
         activeOpacity={0.8}
         onPress={onPress}
         onPressIn={onPressIn}
@@ -51,7 +55,8 @@ export default function CustomButton({
 }
 
 function useScaleAnimation(animationsEnabled) {
-  const scale = useRef(new Animated.Value(1)).current;
+  const [scale] = useState(() => new Animated.Value(1));
+  useEffect(() => () => scale.stopAnimation(), [scale]);
 
   const onPressIn = () => {
     Animated.spring(scale, {
@@ -74,17 +79,14 @@ function useScaleAnimation(animationsEnabled) {
 
 const styles = StyleSheet.create({
   button: {
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    borderRadius: 20,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xl,
+    borderRadius: borderRadius.lg,
 
     alignItems: "center",
     justifyContent: "center",
 
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
-    elevation: 4,
+    ...shadows.button,
   },
 
   danger: {

@@ -2,20 +2,10 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { borderRadius, spacing } from "../styles/spacing";
 
-export default function EmptyState({
-  emoji = "📭",
-  title,
-  subtitle,
-  theme,
-}) {
+export default function EmptyState({ emoji = "📭", title, subtitle, theme }) {
   return (
     <View style={styles.container}>
-      <View
-        style={[
-          styles.emojiBox,
-          { backgroundColor: theme.accentLight },
-        ]}
-      >
+      <View style={[styles.emojiBox, { backgroundColor: theme.accentLight }]}>
         <Text style={styles.emoji}>{emoji}</Text>
       </View>
 

@@ -1,5 +1,7 @@
 import { Component } from "react";
 import { ScrollView, StyleSheet, Text } from "react-native";
+import { palette } from "../styles/colors";
+import { spacing } from "../styles/spacing";
 
 export default class ErrorBoundary extends Component {
   constructor(props) {
@@ -15,7 +17,7 @@ export default class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, info) {
-    console.error("ErrorBoundary caught:", error, info);
+    if (__DEV__) console.error("ErrorBoundary caught:", error, info);
   }
 
   render() {
@@ -28,7 +30,7 @@ export default class ErrorBoundary extends Component {
             {this.state.error.message || String(this.state.error)}
           </Text>
 
-          {!!this.state.error.stack && (
+          {__DEV__ && !!this.state.error.stack && (
             <Text style={styles.stack}>{this.state.error.stack}</Text>
           )}
         </ScrollView>
@@ -46,16 +48,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
 
-    padding: 24,
+    padding: spacing.lg,
 
-    backgroundColor: "#F3ECFF",
+    backgroundColor: palette.bg,
   },
 
   title: {
     fontSize: 24,
     fontWeight: "700",
 
-    color: "#7B5EA7",
+    color: palette.primary,
 
     marginBottom: 14,
   },
@@ -64,7 +66,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 22,
 
-    color: "#2D1B4E",
+    color: palette.text,
 
     textAlign: "center",
 
@@ -77,7 +79,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     lineHeight: 16,
 
-    color: "#6B5B8A",
+    color: palette.textSecondary,
 
     fontFamily: "monospace",
   },

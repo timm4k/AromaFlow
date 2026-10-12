@@ -1,11 +1,18 @@
-import useAromaStore, { getAllNames } from "../store/aromaStore";
+import { useMemo } from "react";
+import { aromas } from "../data/aromas";
+import useAromaStore from "../store/aromaStore";
 import useAuthStore from "../store/authStore";
+
+const builtinNames = aromas.map((aroma) => aroma.title);
 
 export function useAromas() {
   const state = useAromaStore();
   const currentUser = useAuthStore((s) => s.currentUser);
   const myAromas = currentUser ? state.customAromas : [];
-  const allNames = getAllNames();
+  const allNames = useMemo(
+    () => [...builtinNames, ...state.customAromas.map((aroma) => aroma.title)],
+    [state.customAromas],
+  );
   const ready = currentUser
     ? state.subscriptionsReady >= 2
     : state.subscriptionsReady >= 1;

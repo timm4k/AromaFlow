@@ -4,8 +4,16 @@ import {
   deleteAroma as fbDeleteAroma,
   updateAroma as fbUpdateAroma,
 } from "../firebase/aromaService";
-import { aromas } from "../data/aromas";
 import useAuthStore from "./authStore";
+
+function ensureAromaOwner(state, user, id) {
+  const aroma =
+    state.customAromas.find((entry) => entry.id === id) ||
+    state.publicAromas.find((entry) => entry.id === id);
+  if (!user || !aroma || aroma.ownerId !== user.uid) {
+    throw new Error("You can only change your own aromas");
+  }
+}
 
 const useAromaStore = create((set, get) => ({
   publicAromas: [],
@@ -13,6 +21,8 @@ const useAromaStore = create((set, get) => ({
   favorites: [],
   subscriptionError: null,
   subscriptionsReady: 0,
+  resetSubscriptions: () =>
+    set({ subscriptionsReady: 0, subscriptionError: null }),
 
   setPublicAromas: (list) => set({ publicAromas: list }),
   setCustomAromas: (list) => set({ customAromas: list }),
@@ -30,21 +40,18 @@ const useAromaStore = create((set, get) => ({
 
   addAroma: async (aroma) => {
     const { currentUser } = useAuthStore.getState();
-    return await fbAddAroma({
+    if (!currentUser) throw new Error("Sign in to create an aroma");
+    return fbAddAroma({
       ...aroma,
-      ownerId: currentUser?.uid || "unknown",
-      ownerName: currentUser?.displayName || "Unknown",
+      ownerId: currentUser.uid,
+      ownerName: currentUser.displayName || "Unknown",
       visibility: aroma.visibility || "private",
     });
   },
 
   deleteAroma: async (id) => {
     const { currentUser } = useAuthStore.getState();
-    const target = get().customAromas.find((a) => a.id === id);
-    if (target && target.ownerId !== currentUser?.uid) {
-      console.warn("Owner mismatch: cannot delete another user's aroma");
-      return;
-    }
+    ensureAromaOwner(get(), currentUser, id);
     await fbDeleteAroma(id);
     set((state) => ({
       favorites: state.favorites.filter((fid) => fid !== id),
@@ -53,28 +60,9 @@ const useAromaStore = create((set, get) => ({
 
   updateAroma: async (id, updates) => {
     const { currentUser } = useAuthStore.getState();
-    const target = get().customAromas.find((a) => a.id === id);
-    if (target && target.ownerId !== currentUser?.uid) {
-      console.warn("Owner mismatch: cannot update another user's aroma");
-      return;
-    }
+    ensureAromaOwner(get(), currentUser, id);
     await fbUpdateAroma(id, updates);
   },
 }));
 
-function getAllNames() {
-  const state = useAromaStore.getState();
-  const builtin = aromas.map((a) => a.title);
-  const custom = state.customAromas.map((a) => a.title);
-  return [...builtin, ...custom];
-}
-
-function isReady(currentUser) {
-  const state = useAromaStore.getState();
-  return currentUser
-    ? state.subscriptionsReady >= 2
-    : state.subscriptionsReady >= 1;
-}
-
-export { getAllNames, isReady };
 export default useAromaStore;

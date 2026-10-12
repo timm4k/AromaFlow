@@ -25,12 +25,12 @@ export default function AromaCard({
   enableAnimations,
   index,
 }) {
-  const dots = Array.from(
-    { length: 5 },
-    (_, i) => i < (intensity || 0),
-  );
+  const dots = Array.from({ length: 5 }, (_, i) => i < (intensity || 0));
 
-  const { animatedStyle, onPressIn, onPressOut } = useCardAnimation({ index, enabled: enableAnimations });
+  const { animatedStyle, onPressIn, onPressOut } = useCardAnimation({
+    index,
+    enabled: enableAnimations,
+  });
 
   return (
     <Animated.View style={animatedStyle}>
@@ -87,10 +87,7 @@ export default function AromaCard({
                 style={styles.favoriteButton}
               >
                 <Text
-                  style={[
-                    styles.favorite,
-                    favorited && styles.favoriteActive,
-                  ]}
+                  style={[styles.favorite, favorited && styles.favoriteActive]}
                 >
                   {favorited ? "❤️" : "🤍"}
                 </Text>

@@ -1,5 +1,10 @@
 import { useCallback, useMemo, useState } from "react";
-import { formatName, validateDescription, validateName } from "../utils/validation";
+import {
+  aromaLimits,
+  formatName,
+  validateDescription,
+  validateName,
+} from "../utils/validation";
 
 const INITIAL = {
   name: "",
@@ -14,7 +19,9 @@ const INITIAL = {
 export default function useAromaForm(existingNames) {
   const [name, setName] = useState(INITIAL.name);
   const [description, setDescription] = useState(INITIAL.description);
-  const [selectedCategory, setSelectedCategory] = useState(INITIAL.selectedCategory);
+  const [selectedCategory, setSelectedCategory] = useState(
+    INITIAL.selectedCategory,
+  );
   const [selectedMood, setSelectedMood] = useState(INITIAL.selectedMood);
   const [intensity, setIntensity] = useState(INITIAL.intensity);
   const [selectedEmoji, setSelectedEmoji] = useState(INITIAL.selectedEmoji);
@@ -39,10 +46,11 @@ export default function useAromaForm(existingNames) {
     selectedEmoji !== "";
 
   const buildPayload = useCallback(() => {
+    const fullDescription = description.trim();
     const shortDesc =
-      description.trim().length > 100
-        ? description.trim().slice(0, 100) + "..."
-        : description.trim();
+      fullDescription.length > aromaLimits.preview
+        ? fullDescription.slice(0, aromaLimits.preview) + "..."
+        : fullDescription;
 
     return {
       title: formatName(name),
@@ -50,7 +58,7 @@ export default function useAromaForm(existingNames) {
       intensity,
       emoji: selectedEmoji,
       shortDescription: shortDesc,
-      fullDescription: description.trim(),
+      fullDescription,
       origin: "Custom creation",
       recommendedUsage: `Best for ${selectedMood.toLowerCase()} moments`,
       mood: selectedMood,
@@ -58,7 +66,15 @@ export default function useAromaForm(existingNames) {
       interestingFact: "",
       predominance: "",
     };
-  }, [name, description, selectedCategory, selectedMood, intensity, selectedEmoji, visibility]);
+  }, [
+    name,
+    description,
+    selectedCategory,
+    selectedMood,
+    intensity,
+    selectedEmoji,
+    visibility,
+  ]);
 
   const reset = useCallback(() => {
     setName(INITIAL.name);
@@ -81,8 +97,12 @@ export default function useAromaForm(existingNames) {
       visibility,
     },
     setters: {
-      setName: (v) => { if (v.length <= 24) setName(v); },
-      setDescription: (v) => { if (v.length <= 220) setDescription(v); },
+      setName: (v) => {
+        if (v.length <= aromaLimits.name) setName(v);
+      },
+      setDescription: (v) => {
+        if (v.length <= aromaLimits.description) setDescription(v);
+      },
       setSelectedCategory: (cat) => {
         setSelectedCategory(cat);
         setSelectedEmoji("");
@@ -92,8 +112,6 @@ export default function useAromaForm(existingNames) {
       setSelectedEmoji,
       setVisibility,
     },
-    nameValidation,
-    descValidation,
     canSubmit,
     buildPayload,
     reset,

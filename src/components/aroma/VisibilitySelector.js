@@ -16,9 +16,7 @@ export default function VisibilitySelector({ visibility, onSelect, theme }) {
             styles.visibilityPill,
             {
               backgroundColor:
-                visibility === "private"
-                  ? theme.accent
-                  : theme.accentLight,
+                visibility === "private" ? theme.accent : theme.accentLight,
               borderColor:
                 visibility === "private" ? theme.accent : "transparent",
             },
@@ -30,10 +28,7 @@ export default function VisibilitySelector({ visibility, onSelect, theme }) {
             style={[
               styles.visibilityText,
               {
-                color:
-                  visibility === "private"
-                    ? theme.white
-                    : theme.accent,
+                color: visibility === "private" ? theme.white : theme.accent,
                 fontWeight: visibility === "private" ? "700" : "600",
               },
             ]}
@@ -49,9 +44,7 @@ export default function VisibilitySelector({ visibility, onSelect, theme }) {
             styles.visibilityPill,
             {
               backgroundColor:
-                visibility === "public"
-                  ? theme.accent
-                  : theme.accentLight,
+                visibility === "public" ? theme.accent : theme.accentLight,
               borderColor:
                 visibility === "public" ? theme.accent : "transparent",
             },
@@ -63,8 +56,7 @@ export default function VisibilitySelector({ visibility, onSelect, theme }) {
             style={[
               styles.visibilityText,
               {
-                color:
-                  visibility === "public" ? theme.white : theme.accent,
+                color: visibility === "public" ? theme.white : theme.accent,
                 fontWeight: visibility === "public" ? "700" : "600",
               },
             ]}
@@ -74,12 +66,7 @@ export default function VisibilitySelector({ visibility, onSelect, theme }) {
         </TouchableOpacity>
       </View>
 
-      <Text
-        style={[
-          styles.visibilityHint,
-          { color: theme.textSecondary },
-        ]}
-      >
+      <Text style={[styles.visibilityHint, { color: theme.textSecondary }]}>
         {visibility === "public"
           ? "Everyone can see this aroma in Community"
           : "Only you can see this aroma"}

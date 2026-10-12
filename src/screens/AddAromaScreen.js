@@ -1,19 +1,23 @@
-import { useCallback } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Alert, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import CustomButton from "../components/CustomButton";
 import EmojiPicker from "../components/EmojiPicker";
-import InputField from "../components/InputField";
 import IntensitySlider from "../components/IntensitySlider";
 import ScreenHeader from "../components/ScreenHeader";
 import CategorySelector from "../components/aroma/CategorySelector";
 import MoodSelector from "../components/aroma/MoodSelector";
 import VisibilitySelector from "../components/aroma/VisibilitySelector";
+import InputField from "../form-elements-and-validation/InputField";
 
-import { validateDescription, validateName } from "../utils/validation";
 import useAromaForm from "../hooks/useAromaForm";
 import { styles } from "../styles/screens/addAromaStyles";
+import {
+  aromaLimits,
+  validateDescription,
+  validateName,
+} from "../utils/validation";
 
 export default function AddAromaScreen({
   theme,
@@ -22,38 +26,37 @@ export default function AddAromaScreen({
   enableAnimations,
 }) {
   const insets = useSafeAreaInsets();
+  const pendingSave = useRef(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const validateAromaName = useCallback(
     (v) => validateName(v, existingNames),
     [existingNames],
   );
 
-  const {
-    fields,
-    setters,
-    canSubmit,
-    reset,
-    buildPayload,
-  } = useAromaForm(existingNames);
+  const { fields, setters, canSubmit, reset, buildPayload } =
+    useAromaForm(existingNames);
 
   async function handleAdd() {
-    if (!canSubmit) return;
+    if (!canSubmit || pendingSave.current) return;
+    pendingSave.current = true;
+    setIsSaving(true);
 
     try {
       await onAdd(buildPayload());
       reset();
-    } catch (e) {
+    } catch {
       Alert.alert("Error", "Failed to save aroma. Please try again.");
+    } finally {
+      pendingSave.current = false;
+      setIsSaving(false);
     }
   }
 
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.bg }]}
-      contentContainerStyle={[
-        styles.content,
-        { paddingTop: insets.top + 12 },
-      ]}
+      contentContainerStyle={[styles.content, { paddingTop: insets.top + 12 }]}
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
     >
@@ -69,7 +72,7 @@ export default function AddAromaScreen({
         onChangeText={setters.setName}
         placeholder="e.g. Ocean Breeze"
         theme={theme}
-        maxLength={24}
+        maxLength={aromaLimits.name}
         validation={validateAromaName}
         autoCapitalize="words"
       />
@@ -81,7 +84,7 @@ export default function AddAromaScreen({
         placeholder="Describe the aroma, its character, and feeling..."
         theme={theme}
         multiline
-        maxLength={220}
+        maxLength={aromaLimits.description}
         validation={validateDescription}
       />
 
@@ -120,10 +123,10 @@ export default function AddAromaScreen({
 
       <View style={styles.buttonContainer}>
         <CustomButton
-          title="Add Aroma"
+          title={isSaving ? "Saving aroma…" : "Add Aroma"}
           onPress={handleAdd}
           theme={theme}
-          disabled={!canSubmit}
+          disabled={!canSubmit || isSaving}
           enableAnimations={enableAnimations}
         />
       </View>

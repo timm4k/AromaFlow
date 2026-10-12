@@ -2,15 +2,16 @@ import { useMemo, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useAuth } from "../hooks/useAuth";
 import AromaCard from "../components/AromaCard";
 import AromaModal from "../components/AromaModal";
 import CategoryFilter from "../components/CategoryFilter";
 import ScreenHeader from "../components/ScreenHeader";
 import SearchBar from "../components/SearchBar";
+import { useAuth } from "../hooks/useAuth";
 
 import { aromas, categories } from "../data/aromas";
 import { spacing } from "../styles/spacing";
+import { filterAromas } from "../utils/filterAromas";
 
 export default function AromasScreen({
   theme,
@@ -27,21 +28,10 @@ export default function AromasScreen({
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedAroma, setSelectedAroma] = useState(null);
 
-  const filtered = useMemo(() => {
-    const query = searchQuery.toLowerCase().trim();
-
-    return aromas.filter((aroma) => {
-      const matchesSearch =
-        query === "" ||
-        aroma.title.toLowerCase().includes(query) ||
-        aroma.category.toLowerCase().includes(query);
-
-      const matchesCategory =
-        selectedCategory === "All" || aroma.category === selectedCategory;
-
-      return matchesSearch && matchesCategory;
-    });
-  }, [searchQuery, selectedCategory]);
+  const filtered = useMemo(
+    () => filterAromas(aromas, searchQuery, selectedCategory),
+    [searchQuery, selectedCategory],
+  );
 
   const visibleAromas = favoritesOnly
     ? filtered.filter((aroma) => favorites.includes(aroma.id))
@@ -67,12 +57,7 @@ export default function AromasScreen({
       />
 
       <View style={styles.countRow}>
-        <Text
-          style={[
-            styles.countText,
-            { color: theme.textSecondary },
-          ]}
-        >
+        <Text style={[styles.countText, { color: theme.textSecondary }]}>
           {visibleAromas.length}{" "}
           {visibleAromas.length === 1 ? "aroma" : "aromas"}
           {favoritesOnly ? " (favorites)" : ""}

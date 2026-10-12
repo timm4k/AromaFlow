@@ -1,8 +1,17 @@
-import { Alert, Linking, ScrollView, Share, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  Linking,
+  ScrollView,
+  Share,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../hooks/useTheme";
-import { shadows } from "../styles/shadows";
 import { styles } from "../styles/screens/inspirationDetailsStyles";
+import { shadows } from "../styles/shadows";
+import { spacing } from "../styles/spacing";
 
 export default function InspirationDetailsScreen({ route, navigation }) {
   const { inspiration } = route.params;
@@ -16,6 +25,7 @@ export default function InspirationDetailsScreen({ route, navigation }) {
         title: inspiration.title,
       });
     } catch {
+      Alert.alert("Sharing Unavailable", "Could not share this article");
     }
   }
 
@@ -24,23 +34,35 @@ export default function InspirationDetailsScreen({ route, navigation }) {
 
     if (!url) return;
 
-    const supported = await Linking.canOpenURL(url);
-
-    if (supported) {
+    try {
+      if (!(await Linking.canOpenURL(url))) throw new Error("Unsupported link");
       await Linking.openURL(url);
-    } else {
-      Alert.alert("Link Unavailable", "This source page could not be opened.");
+    } catch {
+      Alert.alert("Link Unavailable", "This source page could not be opened");
     }
   }
 
   return (
     <View style={[styles.container, { backgroundColor: theme.bg }]}>
-      <View style={[styles.header, { paddingTop: insets.top + spacing.md, backgroundColor: theme.bg }]}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn} activeOpacity={0.7}>
+      <View
+        style={[
+          styles.header,
+          { paddingTop: insets.top + spacing.md, backgroundColor: theme.bg },
+        ]}
+      >
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backBtn}
+          activeOpacity={0.7}
+        >
           <Text style={[styles.backArrow, { color: theme.accent }]}>←</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={handleShare} style={styles.shareBtn} activeOpacity={0.7}>
+        <TouchableOpacity
+          onPress={handleShare}
+          style={styles.shareBtn}
+          activeOpacity={0.7}
+        >
           <Text style={{ fontSize: 20 }}>📤</Text>
         </TouchableOpacity>
       </View>
@@ -50,11 +72,15 @@ export default function InspirationDetailsScreen({ route, navigation }) {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.heroSection}>
-          <View style={[styles.emojiCircle, { backgroundColor: theme.accentLight }]}>
+          <View
+            style={[styles.emojiCircle, { backgroundColor: theme.accentLight }]}
+          >
             <Text style={styles.heroEmoji}>{inspiration.emoji}</Text>
           </View>
 
-          <Text style={[styles.title, { color: theme.text }]}>{inspiration.title}</Text>
+          <Text style={[styles.title, { color: theme.text }]}>
+            {inspiration.title}
+          </Text>
 
           <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
             {inspiration.subtitle}
@@ -62,7 +88,9 @@ export default function InspirationDetailsScreen({ route, navigation }) {
 
           <View style={styles.metaRow}>
             {inspiration.category && (
-              <View style={[styles.badge, { backgroundColor: theme.accentLight }]}>
+              <View
+                style={[styles.badge, { backgroundColor: theme.accentLight }]}
+              >
                 <Text style={[styles.badgeText, { color: theme.accent }]}>
                   {inspiration.category}
                 </Text>
@@ -86,7 +114,13 @@ export default function InspirationDetailsScreen({ route, navigation }) {
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={handleOpenSource}
-              style={[styles.sourceBtn, { backgroundColor: theme.accentLight, borderColor: theme.accent }]}
+              style={[
+                styles.sourceBtn,
+                {
+                  backgroundColor: theme.accentLight,
+                  borderColor: theme.accent,
+                },
+              ]}
             >
               <Text style={[styles.sourceBtnText, { color: theme.accent }]}>
                 🔗 Open Source Article
@@ -101,16 +135,26 @@ export default function InspirationDetailsScreen({ route, navigation }) {
           </Text>
 
           {inspiration.tips && inspiration.tips.length > 0 && (
-            <View style={[styles.tipsCard, { backgroundColor: theme.card, shadowColor: theme.shadow }, shadows.modal]}>
+            <View
+              style={[
+                styles.tipsCard,
+                { backgroundColor: theme.card, shadowColor: theme.shadow },
+                shadows.modal,
+              ]}
+            >
               <Text style={[styles.tipsTitle, { color: theme.text }]}>
                 💡 Practical Tips
               </Text>
 
-              {inspiration.tips.map((tip, index) => (
-                <View key={index} style={styles.tipRow}>
-                  <Text style={[styles.tipBullet, { color: theme.accent }]}>•</Text>
+              {inspiration.tips.map((tip) => (
+                <View key={tip} style={styles.tipRow}>
+                  <Text style={[styles.tipBullet, { color: theme.accent }]}>
+                    •
+                  </Text>
 
-                  <Text style={[styles.tipText, { color: theme.textSecondary }]}>
+                  <Text
+                    style={[styles.tipText, { color: theme.textSecondary }]}
+                  >
                     {tip}
                   </Text>
                 </View>

@@ -27,39 +27,33 @@ export const palette = {
   success: "#4CAF50",
 };
 
-export const fontSizeScale = {
-  small: 0.88,
+const fontScaleMap = {
+  small: 0.92,
   medium: 1,
   large: 1.12,
 };
 
-export function getTheme(darkMode, pastelMode, accentIntensity, fontSize = "medium") {
-  const fontScaleMap = {
-    small: 0.92,
-    medium: 1,
-    large: 1.12,
-  };
+const intensityMap = {
+  low: {
+    accent: palette.secondary,
+    accentLight: palette.lightBg,
+    accentDim: palette.border,
+  },
+  medium: {
+    accent: palette.primary,
+    accentLight: palette.light,
+    accentDim: palette.secondary,
+  },
+  high: { accent: "#5B3E87", accentLight: "#A98BE0", accentDim: "#8A6CC2" },
+};
+
+export function getTheme(
+  darkMode,
+  pastelMode,
+  accentIntensity,
+  fontSize = "medium",
+) {
   const fontScale = fontScaleMap[fontSize] || 1;
-
-  const intensityMap = {
-    low: {
-      accent: "#B8A2E3",
-      accentLight: "#E9D8FD",
-      accentDim: "#D8C8F0",
-    },
-
-    medium: {
-      accent: "#7B5EA7",
-      accentLight: "#CDB4FF",
-      accentDim: "#B8A2E3",
-    },
-
-    high: {
-      accent: "#5B3E87",
-      accentLight: "#A98BE0",
-      accentDim: "#8A6CC2",
-    },
-  };
 
   const intensity = intensityMap[accentIntensity] || intensityMap.medium;
 

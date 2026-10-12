@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 const ERROR_MAP = {
   "auth/user-not-found": "No account found with this email",
@@ -18,20 +18,25 @@ export default function useAuthForm({ mode, login, register }) {
   const [displayName, setDisplayName] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const submitting = useRef(false);
 
   const isLogin = mode === "login";
 
   function validate() {
     if (!email.trim()) return "Email is required";
-    if (!/\S+@\S+\.\S+/.test(email.trim())) return "Please enter a valid email";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()))
+      return "Please enter a valid email";
     if (!password) return "Password is required";
-    if (!isLogin && password.length < 6) return "Password must be at least 6 characters";
-    if (!isLogin && password !== confirmPassword) return "Passwords do not match";
+    if (!isLogin && password.length < 6)
+      return "Password must be at least 6 characters";
+    if (!isLogin && password !== confirmPassword)
+      return "Passwords do not match";
 
     return null;
   }
 
   async function handleSubmit() {
+    if (submitting.current) return;
     setError("");
 
     const validationError = validate();
@@ -41,17 +46,27 @@ export default function useAuthForm({ mode, login, register }) {
       return;
     }
 
+    submitting.current = true;
     setIsSubmitting(true);
 
     try {
       if (isLogin) {
         await login(email.trim().toLowerCase(), password);
       } else {
-        await register(email.trim().toLowerCase(), password, displayName.trim() || undefined);
+        await register(
+          email.trim().toLowerCase(),
+          password,
+          displayName.trim() || undefined,
+        );
       }
     } catch (e) {
-      setError(ERROR_MAP[e.code] || e.message || (isLogin ? "Login failed" : "Registration failed"));
+      setError(
+        ERROR_MAP[e.code] ||
+          e.message ||
+          (isLogin ? "Login failed" : "Registration failed"),
+      );
     } finally {
+      submitting.current = false;
       setIsSubmitting(false);
     }
   }

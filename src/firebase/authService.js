@@ -28,7 +28,11 @@ export async function signIn(email, password) {
 }
 
 export async function registerUser(email, password, displayName) {
-  const credential = await createUserWithEmailAndPassword(auth, email, password);
+  const credential = await createUserWithEmailAndPassword(
+    auth,
+    email,
+    password,
+  );
 
   if (displayName) {
     await updateProfile(credential.user, { displayName });

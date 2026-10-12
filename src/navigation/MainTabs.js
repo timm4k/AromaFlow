@@ -1,14 +1,14 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { StyleSheet, Text, View } from "react-native";
 
+import { useTheme } from "../hooks/useTheme";
 import CommunityScreen from "../screens/CommunityScreen";
 import InspirationScreen from "../screens/InspirationScreen";
 import SettingsScreen from "../screens/SettingsScreen";
-import { AromasTab, MyAromasTab, AddTab } from "./tabScreens";
-import { useTheme } from "../hooks/useTheme";
 import { shadows } from "../styles/shadows";
 import { borderRadius } from "../styles/spacing";
 import { withOpacity } from "../utils/colorHelpers";
+import { AddTab, AromasTab, MyAromasTab } from "./tabScreens";
 
 const Tab = createBottomTabNavigator();
 
@@ -20,9 +20,7 @@ function TabIcon({ icon, focused, accent }) {
         focused && { backgroundColor: accent + "25" },
       ]}
     >
-      <Text style={[styles.icon, focused && styles.iconFocused]}>
-        {icon}
-      </Text>
+      <Text style={[styles.icon, focused && styles.iconFocused]}>{icon}</Text>
     </View>
   );
 }

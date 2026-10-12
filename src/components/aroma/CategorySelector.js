@@ -2,12 +2,14 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { addCategories } from "../../utils/constants";
 import { styles } from "../../styles/screens/addAromaStyles";
 
-export default function CategorySelector({ selectedCategory, onSelect, theme }) {
+export default function CategorySelector({
+  selectedCategory,
+  onSelect,
+  theme,
+}) {
   return (
     <View style={styles.section}>
-      <Text style={[styles.sectionLabel, { color: theme.text }]}>
-        Category
-      </Text>
+      <Text style={[styles.sectionLabel, { color: theme.text }]}>Category</Text>
 
       <View style={styles.pillsRow}>
         {addCategories.map((cat) => {
@@ -21,9 +23,7 @@ export default function CategorySelector({ selectedCategory, onSelect, theme }) 
               style={[
                 styles.pill,
                 {
-                  backgroundColor: active
-                    ? theme.accent
-                    : theme.accentLight,
+                  backgroundColor: active ? theme.accent : theme.accentLight,
                   borderColor: active ? theme.accent : "transparent",
                   shadowColor: active ? theme.accent : "transparent",
                   shadowOpacity: active ? 0.3 : 0,

@@ -1,39 +1,47 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Alert, Share } from "react-native";
-import { getAromaById } from "../firebase/aromaService";
 import { aromas as localAromas } from "../data/aromas";
+import { getAromaById } from "../firebase/aromaService";
+import { createCalendarReminder } from "../services/calendarService";
 
 function findLocalAroma(id) {
-  return localAromas.find(
-    (a) => a.id === id || a.title?.toLowerCase().replace(/\s+/g, "-") === id,
-  ) || null;
+  return (
+    localAromas.find(
+      (a) => a.id === id || a.title?.toLowerCase().replace(/\s+/g, "-") === id,
+    ) || null
+  );
 }
 
 export default function useAromaDetails(aromaId, currentUser) {
   const [aroma, setAroma] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loadedId, setLoadedId] = useState(null);
+  const loading = loadedId !== aromaId;
 
   const isOwner = aroma && currentUser && aroma.ownerId === currentUser.uid;
 
   useEffect(() => {
+    let active = true;
     (async () => {
       try {
         const local = findLocalAroma(aromaId);
 
-        if (local) {
-          setAroma(local);
-          setLoading(false);
-          return;
+        const data = local || (await getAromaById(aromaId));
+        if (active) setAroma(data);
+      } catch {
+        if (active) {
+          setAroma(null);
+          Alert.alert(
+            "Aroma Unavailable",
+            "Could not load this aroma — please try again",
+          );
         }
-
-        const data = await getAromaById(aromaId);
-        setAroma(data);
-      } catch (e) {
-        console.warn("Failed to load aroma", e);
       } finally {
-        setLoading(false);
+        if (active) setLoadedId(aromaId);
       }
     })();
+    return () => {
+      active = false;
+    };
   }, [aromaId]);
 
   const handleShare = useCallback(async () => {
@@ -45,42 +53,45 @@ export default function useAromaDetails(aromaId, currentUser) {
         title: aroma.title,
       });
     } catch {
+      Alert.alert("Sharing Unavailable", "Could not share this aroma");
     }
   }, [aroma]);
 
   const handleCalendarReminder = useCallback(async () => {
     try {
-      const Calendar = await import("expo-calendar");
-
-      const { status } = await Calendar.requestCalendarPermissionsAsync();
-
-      if (status !== "granted") {
-        Alert.alert("Permission Denied", "Calendar access is needed to set reminders.");
+      const result = await createCalendarReminder({
+        title: `AromaFlow: ${aroma?.title || "Explore Scents"}`,
+        notes: aroma?.shortDescription || "",
+      });
+      if (result.status === "unsupported") {
+        Alert.alert(
+          "Calendar unavailable in Expo Go",
+          "Calendar reminders require a development build of AromaFlow",
+        );
+        return;
+      }
+      if (result.status === "permission-denied") {
+        Alert.alert(
+          "Permission Denied",
+          "Calendar access is needed to set reminders.",
+        );
         return;
       }
 
-      const calendars = await Calendar.getCalendarsAsync();
-      const defaultCal = calendars.find((c) => c.allowsModifications) || calendars[0];
-
-      if (!defaultCal) {
+      if (result.status === "no-calendar") {
         Alert.alert("No Calendar Found", "Could not find a writable calendar.");
         return;
       }
 
-      const now = new Date();
-      const event = {
-        title: `AromaFlow: ${aroma?.title || "Explore Scents"}`,
-        notes: aroma?.shortDescription || "",
-        startDate: now,
-        endDate: new Date(now.getTime() + 30 * 60 * 1000),
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      };
-
-      await Calendar.createEventAsync(defaultCal.id, event);
-      Alert.alert("Reminder Added", "A 30-minute exploration session has been added to your calendar.");
-    } catch (e) {
-      console.warn("Calendar error", e);
-      Alert.alert("Calendar Error", "Could not create the event. Make sure expo-calendar is installed.");
+      Alert.alert(
+        "Reminder Added",
+        "A 30-minute exploration session has been added to your calendar.",
+      );
+    } catch {
+      Alert.alert(
+        "Calendar Error",
+        "Could not create the event. Make sure expo-calendar is installed.",
+      );
     }
   }, [aroma]);
 
@@ -91,7 +102,9 @@ export default function useAromaDetails(aromaId, currentUser) {
 
   const createdDate = aroma?.createdAt
     ? new Date(aroma.createdAt).toLocaleDateString("en-US", {
-        year: "numeric", month: "long", day: "numeric",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
       })
     : null;
 

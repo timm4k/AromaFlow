@@ -1,20 +1,35 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Animated } from "react-native";
 
 export default function useCardAnimation({ index = 0, enabled = true } = {}) {
-  const fadeIn = useRef(new Animated.Value(0)).current;
-  const slideUp = useRef(new Animated.Value(20)).current;
-  const scale = useRef(new Animated.Value(1)).current;
+  const [fadeIn] = useState(() => new Animated.Value(0));
+  const [slideUp] = useState(() => new Animated.Value(20));
+  const [scale] = useState(() => new Animated.Value(1));
 
   useEffect(() => {
     const dur = enabled ? 400 : 0;
     const delay = (index || 0) * 80;
 
-    Animated.parallel([
-      Animated.timing(fadeIn, { toValue: 1, duration: dur, delay, useNativeDriver: true }),
-      Animated.timing(slideUp, { toValue: 0, duration: dur, delay, useNativeDriver: true }),
-    ]).start();
-  }, [enabled, index, fadeIn, slideUp]);
+    const animation = Animated.parallel([
+      Animated.timing(fadeIn, {
+        toValue: 1,
+        duration: dur,
+        delay,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideUp, {
+        toValue: 0,
+        duration: dur,
+        delay,
+        useNativeDriver: true,
+      }),
+    ]);
+    animation.start();
+    return () => {
+      animation.stop();
+      scale.stopAnimation();
+    };
+  }, [enabled, index, fadeIn, slideUp, scale]);
 
   const onPressIn = () => {
     Animated.spring(scale, {

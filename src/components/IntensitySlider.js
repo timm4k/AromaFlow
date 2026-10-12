@@ -1,5 +1,11 @@
-import { useEffect, useRef } from "react";
-import { Animated, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useEffect, useState } from "react";
+import {
+  Animated,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 const levels = [
   { value: 1, label: "Very Light" },
@@ -9,17 +15,19 @@ const levels = [
   { value: 5, label: "Intense" },
 ];
 
-function IntensityDot({ level, value, selected, onPress, theme, enableAnimations }) {
-  const scale = useRef(new Animated.Value(1)).current;
+function IntensityDot({ level, value, onPress, theme, enableAnimations }) {
+  const [scale] = useState(() => new Animated.Value(1));
   const active = value >= level;
 
   useEffect(() => {
-    Animated.spring(scale, {
+    const animation = Animated.spring(scale, {
       toValue: value === level ? 1.25 : 1,
       friction: enableAnimations ? 4 : 0,
       useNativeDriver: true,
-    }).start();
-  }, [value, level, enableAnimations]);
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [value, level, enableAnimations, scale]);
 
   return (
     <TouchableOpacity
@@ -42,10 +50,20 @@ function IntensityDot({ level, value, selected, onPress, theme, enableAnimations
   );
 }
 
-export default function IntensitySlider({ value, onChange, theme, enableAnimations }) {
+export default function IntensitySlider({
+  value,
+  onChange,
+  theme,
+  enableAnimations,
+}) {
   return (
     <View style={styles.container}>
-      <Text style={[styles.label, { color: theme.text, fontSize: 13 * theme.fontScale }]}>
+      <Text
+        style={[
+          styles.label,
+          { color: theme.text, fontSize: 13 * theme.fontScale },
+        ]}
+      >
         Intensity
       </Text>
 
@@ -80,7 +98,10 @@ export default function IntensitySlider({ value, onChange, theme, enableAnimatio
       <Text
         style={[
           styles.valueLabel,
-          { color: value > 0 ? theme.accent : theme.textSecondary, fontSize: 13 * theme.fontScale },
+          {
+            color: value > 0 ? theme.accent : theme.textSecondary,
+            fontSize: 13 * theme.fontScale,
+          },
         ]}
       >
         {levels.find((l) => l.value === value)?.label || "Select intensity"}

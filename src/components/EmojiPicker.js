@@ -1,31 +1,26 @@
-import { useEffect, useRef } from "react";
-import { Animated, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useEffect, useState } from "react";
+import {
+  Animated,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 import { categoryEmojis } from "../utils/constants";
 
 function EmojiItem({ emoji, selected, onSelect, theme, enableAnimations }) {
-  const scale = useRef(new Animated.Value(1)).current;
-  const glow = useRef(new Animated.Value(0)).current;
+  const [scale] = useState(() => new Animated.Value(1));
 
   useEffect(() => {
-    Animated.parallel([
-      Animated.spring(scale, {
-        toValue: selected ? 1.2 : 1,
-        friction: enableAnimations ? 4 : 0,
-        useNativeDriver: true,
-      }),
-      Animated.timing(glow, {
-        toValue: selected ? 1 : 0,
-        duration: enableAnimations ? 200 : 0,
-        useNativeDriver: false,
-      }),
-    ]).start();
-  }, [selected, enableAnimations]);
-
-  const glowColor = glow.interpolate({
-    inputRange: [0, 1],
-    outputRange: [theme.accentLight, theme.accent],
-  });
+    const animation = Animated.spring(scale, {
+      toValue: selected ? 1.2 : 1,
+      friction: enableAnimations ? 4 : 0,
+      useNativeDriver: true,
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [selected, enableAnimations, scale]);
 
   return (
     <Animated.View
@@ -67,7 +62,12 @@ export default function EmojiPicker({
   if (!selectedCategory || emojis.length === 0) {
     return (
       <View style={styles.empty}>
-        <Text style={[styles.emptyText, { color: theme.textSecondary, fontSize: 14 * theme.fontScale }]}>
+        <Text
+          style={[
+            styles.emptyText,
+            { color: theme.textSecondary, fontSize: 14 * theme.fontScale },
+          ]}
+        >
           Select a category first
         </Text>
       </View>
@@ -76,7 +76,14 @@ export default function EmojiPicker({
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.label, { color: theme.text, fontSize: 13 * theme.fontScale }]}>Choose Emoji</Text>
+      <Text
+        style={[
+          styles.label,
+          { color: theme.text, fontSize: 13 * theme.fontScale },
+        ]}
+      >
+        Choose Emoji
+      </Text>
 
       <View style={styles.grid}>
         {emojis.map((emoji) => (

@@ -1,10 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import {
   Animated,
   Modal,
   StyleSheet,
   Text,
-  TouchableOpacity,
+  Pressable,
+  ScrollView,
   View,
 } from "react-native";
 
@@ -22,15 +23,20 @@ export default function ConfirmationModal({
   theme,
   destructive = true,
   enableAnimations,
+  showCancel = true,
 }) {
-  const dialogScale = useRef(new Animated.Value(0.9)).current;
-  const dialogOpacity = useRef(new Animated.Value(0)).current;
+  const [dialogScale] = useState(() => new Animated.Value(0.9));
+  const [dialogOpacity] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     if (visible) {
-      const dur = enableAnimations ? 250 : 0;
+      if (!enableAnimations) {
+        dialogScale.setValue(1);
+        dialogOpacity.setValue(1);
+        return;
+      }
 
-      Animated.parallel([
+      const animation = Animated.parallel([
         Animated.spring(dialogScale, {
           toValue: 1,
           friction: 7,
@@ -39,15 +45,17 @@ export default function ConfirmationModal({
         }),
         Animated.timing(dialogOpacity, {
           toValue: 1,
-          duration: dur,
+          duration: 250,
           useNativeDriver: true,
         }),
-      ]).start();
+      ]);
+      animation.start();
+      return () => animation.stop();
     } else {
       dialogScale.setValue(0.9);
       dialogOpacity.setValue(0);
     }
-  }, [visible, enableAnimations]);
+  }, [visible, enableAnimations, dialogScale, dialogOpacity]);
 
   return (
     <Modal
@@ -82,51 +90,57 @@ export default function ConfirmationModal({
           </Text>
 
           {message && (
-            <Text
-              style={[
-                styles.message,
-                {
-                  color: theme.textSecondary,
-                  fontSize: 14 * theme.fontScale,
-                  lineHeight: 20 * theme.fontScale,
-                },
-              ]}
-            >
-              {message}
-            </Text>
-          )}
-
-          <View style={styles.actions}>
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={onCancel}
-              style={[
-                styles.button,
-                styles.cancelButton,
-                { borderColor: theme.border },
-              ]}
-            >
+            <ScrollView style={styles.messageScroll}>
               <Text
                 style={[
-                  styles.buttonText,
+                  styles.message,
                   {
                     color: theme.textSecondary,
-                    fontSize: 15 * theme.fontScale,
+                    fontSize: 14 * theme.fontScale,
+                    lineHeight: 20 * theme.fontScale,
                   },
                 ]}
               >
-                {cancelText}
+                {message}
               </Text>
-            </TouchableOpacity>
+            </ScrollView>
+          )}
 
-            <TouchableOpacity
-              activeOpacity={0.8}
+          <View style={styles.actions}>
+            {showCancel && (
+              <Pressable
+                accessibilityRole="button"
+                onPress={onCancel}
+                style={({ pressed }) => [
+                  styles.button,
+                  styles.cancelButton,
+                  { borderColor: theme.border },
+                  pressed && styles.pressed,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.buttonText,
+                    {
+                      color: theme.textSecondary,
+                      fontSize: 15 * theme.fontScale,
+                    },
+                  ]}
+                >
+                  {cancelText}
+                </Text>
+              </Pressable>
+            )}
+
+            <Pressable
+              accessibilityRole="button"
               onPress={onConfirm}
-              style={[
+              style={({ pressed }) => [
                 styles.button,
                 {
                   backgroundColor: destructive ? theme.error : theme.accent,
                 },
+                pressed && styles.pressed,
               ]}
             >
               <Text
@@ -141,7 +155,7 @@ export default function ConfirmationModal({
               >
                 {confirmText}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </Animated.View>
       </View>
@@ -150,6 +164,7 @@ export default function ConfirmationModal({
 }
 
 const styles = StyleSheet.create({
+  pressed: { opacity: 0.65 },
   overlay: {
     flex: 1,
     justifyContent: "center",
@@ -159,6 +174,7 @@ const styles = StyleSheet.create({
 
   dialog: {
     width: "100%",
+    maxHeight: "90%",
     maxWidth: 340,
     borderRadius: borderRadius.xl,
     padding: spacing.lg,
@@ -180,6 +196,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
     opacity: 0.7,
   },
+  messageScroll: { flexShrink: 1, width: "100%" },
 
   actions: {
     flexDirection: "row",

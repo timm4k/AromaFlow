@@ -1,6 +1,11 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  Animated, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View,
+  Animated,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { shadows } from "../styles/shadows";
@@ -9,53 +14,112 @@ import ModalAromaContent from "./aroma/ModalAromaContent";
 import ModalCustomInfo from "./aroma/ModalCustomInfo";
 
 export default function AromaModal({
-  visible, aroma, onClose, theme, enableAnimations, currentUser,
+  visible,
+  aroma,
+  onClose,
+  theme,
+  enableAnimations,
+  currentUser,
 }) {
   const navigation = useNavigation();
-  if (!aroma) return null;
 
-  const overlayOpacity = useRef(new Animated.Value(0)).current;
-  const sheetTranslate = useRef(new Animated.Value(300)).current;
-  const sheetScale = useRef(new Animated.Value(0.95)).current;
+  const [overlayOpacity] = useState(() => new Animated.Value(0));
+  const [sheetTranslate] = useState(() => new Animated.Value(300));
+  const [sheetScale] = useState(() => new Animated.Value(0.95));
   const closing = useRef(false);
 
   useEffect(() => {
     if (visible) {
       closing.current = false;
       const dur = enableAnimations ? 300 : 0;
-      Animated.parallel([
-        Animated.timing(overlayOpacity, { toValue: 1, duration: dur, useNativeDriver: true }),
-        Animated.timing(sheetTranslate, { toValue: 0, duration: dur, useNativeDriver: true }),
-        Animated.spring(sheetScale, { toValue: 1, friction: 8, useNativeDriver: true }),
-      ]).start();
+      const animation = Animated.parallel([
+        Animated.timing(overlayOpacity, {
+          toValue: 1,
+          duration: dur,
+          useNativeDriver: true,
+        }),
+        Animated.timing(sheetTranslate, {
+          toValue: 0,
+          duration: dur,
+          useNativeDriver: true,
+        }),
+        Animated.spring(sheetScale, {
+          toValue: 1,
+          friction: 8,
+          useNativeDriver: true,
+        }),
+      ]);
+      animation.start();
+      return () => animation.stop();
     } else if (!closing.current) {
       overlayOpacity.setValue(0);
       sheetTranslate.setValue(300);
       sheetScale.setValue(0.95);
     }
-  }, [visible, enableAnimations]);
+  }, [visible, enableAnimations, overlayOpacity, sheetTranslate, sheetScale]);
 
   const handleClose = useCallback(() => {
     if (closing.current) return;
     closing.current = true;
     const dur = enableAnimations ? 200 : 0;
     Animated.parallel([
-      Animated.timing(overlayOpacity, { toValue: 0, duration: dur, useNativeDriver: true }),
-      Animated.timing(sheetTranslate, { toValue: 300, duration: dur, useNativeDriver: true }),
-      Animated.timing(sheetScale, { toValue: 0.95, duration: dur, useNativeDriver: true }),
-    ]).start(() => {
-      onClose();
+      Animated.timing(overlayOpacity, {
+        toValue: 0,
+        duration: dur,
+        useNativeDriver: true,
+      }),
+      Animated.timing(sheetTranslate, {
+        toValue: 300,
+        duration: dur,
+        useNativeDriver: true,
+      }),
+      Animated.timing(sheetScale, {
+        toValue: 0.95,
+        duration: dur,
+        useNativeDriver: true,
+      }),
+    ]).start(({ finished }) => {
+      if (finished) onClose();
     });
   }, [enableAnimations, overlayOpacity, sheetTranslate, sheetScale, onClose]);
 
+  if (!aroma) return null;
+
   return (
-    <Modal visible={visible} transparent animationType="none" onRequestClose={handleClose}>
-      <Animated.View style={[styles.overlay, { backgroundColor: theme.overlay, opacity: overlayOpacity }]}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="none"
+      onRequestClose={handleClose}
+    >
+      <Animated.View
+        style={[
+          styles.overlay,
+          { backgroundColor: theme.overlay, opacity: overlayOpacity },
+        ]}
+      >
         <Animated.View
-          style={[styles.sheet, { backgroundColor: theme.card, shadowColor: theme.shadow, transform: [{ translateY: sheetTranslate }, { scale: sheetScale }] }, shadows.modal]}
+          style={[
+            styles.sheet,
+            {
+              backgroundColor: theme.card,
+              shadowColor: theme.shadow,
+              transform: [
+                { translateY: sheetTranslate },
+                { scale: sheetScale },
+              ],
+            },
+            shadows.modal,
+          ]}
         >
-          <TouchableOpacity onPress={handleClose} activeOpacity={0.7} style={styles.closeButton}>
-            <Text style={[styles.closeText, { color: theme.textSecondary }]}>✕</Text>
+          <TouchableOpacity
+            onPress={handleClose}
+            activeOpacity={0.7}
+            style={styles.closeButton}
+          >
+            <Text style={[styles.closeText, { color: theme.textSecondary }]}>
+              ✕
+            </Text>
           </TouchableOpacity>
 
           <ScrollView showsVerticalScrollIndicator={false}>
@@ -72,7 +136,11 @@ export default function AromaModal({
               <Text style={styles.viewDetailsText}>View Details</Text>
             </TouchableOpacity>
 
-            <ModalCustomInfo aroma={aroma} currentUser={currentUser} theme={theme} />
+            <ModalCustomInfo
+              aroma={aroma}
+              currentUser={currentUser}
+              theme={theme}
+            />
           </ScrollView>
         </Animated.View>
       </Animated.View>
@@ -83,17 +151,33 @@ export default function AromaModal({
 const styles = StyleSheet.create({
   overlay: { flex: 1, justifyContent: "flex-end" },
   sheet: {
-    maxHeight: "85%", paddingTop: 20, paddingBottom: 36, paddingHorizontal: 24,
-    borderTopLeftRadius: borderRadius.xxl, borderTopRightRadius: borderRadius.xxl,
+    maxHeight: "85%",
+    paddingTop: 20,
+    paddingBottom: 36,
+    paddingHorizontal: 24,
+    borderTopLeftRadius: borderRadius.xxl,
+    borderTopRightRadius: borderRadius.xxl,
   },
   closeButton: {
-    alignSelf: "flex-end", width: 36, height: 36,
-    justifyContent: "center", alignItems: "center", marginBottom: 6,
+    alignSelf: "flex-end",
+    width: 36,
+    height: 36,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 6,
   },
   closeText: { fontWeight: "700" },
   viewDetailsBtn: {
-    paddingVertical: 12, borderRadius: 16,
-    alignItems: "center", justifyContent: "center", marginTop: 16,
+    paddingVertical: 12,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 16,
   },
-  viewDetailsText: { color: "#FFFFFF", fontSize: 15, fontWeight: "700", letterSpacing: 0.3 },
+  viewDetailsText: {
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "700",
+    letterSpacing: 0.3,
+  },
 });

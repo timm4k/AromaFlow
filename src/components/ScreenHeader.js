@@ -6,15 +6,9 @@ import { typography } from "../styles/typography";
 export default function ScreenHeader({ title, subtitle, theme, style }) {
   return (
     <View
-      style={[
-        styles.container,
-        { paddingBottom: headerPadding.bottom },
-        style,
-      ]}
+      style={[styles.container, { paddingBottom: headerPadding.bottom }, style]}
     >
-      <Text style={[styles.title, { color: theme.text }]}>
-        {title}
-      </Text>
+      <Text style={[styles.title, { color: theme.text }]}>{title}</Text>
 
       {subtitle && (
         <Text style={[styles.subtitle, { color: theme.textSecondary }]}>

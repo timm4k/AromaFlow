@@ -1,13 +1,24 @@
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { styles } from "../../styles/screens/aromaDetailsStyles";
 
-export default function ImageSection({ aroma, isOwner, previewUri, pickImage, removeImage, theme }) {
+export default function ImageSection({
+  aroma,
+  isOwner,
+  previewUri,
+  pickImage,
+  removeImage,
+  theme,
+}) {
   const displayUri = previewUri || aroma.imageUri;
 
   if (displayUri) {
     return (
       <View style={styles.imageSection}>
-        <Image source={{ uri: displayUri }} style={styles.aromaImage} resizeMode="cover" />
+        <Image
+          source={{ uri: displayUri }}
+          style={styles.aromaImage}
+          resizeMode="cover"
+        />
         {isOwner && !previewUri && (
           <TouchableOpacity
             activeOpacity={0.7}
@@ -26,9 +37,14 @@ export default function ImageSection({ aroma, isOwner, previewUri, pickImage, re
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={pickImage}
-        style={[styles.attachButton, { backgroundColor: theme.accentLight, borderColor: theme.accent }]}
+        style={[
+          styles.attachButton,
+          { backgroundColor: theme.accentLight, borderColor: theme.accent },
+        ]}
       >
-        <Text style={[styles.attachText, { color: theme.accent }]}>+ Attach Image</Text>
+        <Text style={[styles.attachText, { color: theme.accent }]}>
+          + Attach Image
+        </Text>
       </TouchableOpacity>
     );
   }

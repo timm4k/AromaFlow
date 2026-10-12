@@ -1,29 +1,41 @@
 import {
-  ActivityIndicator, Animated, KeyboardAvoidingView, Platform,
-  ScrollView, Text, TouchableOpacity, View,
+  ActivityIndicator,
+  Animated,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useAuth } from "../hooks/useAuth";
-import { useTheme } from "../hooks/useTheme";
-import useAuthForm from "../hooks/useAuthForm";
-import useEntranceAnimation from "../hooks/useEntranceAnimation";
-import AuthInput from "../components/auth/AuthInput";
 import AuthCard from "../components/auth/AuthCard";
 import AuthFooter from "../components/auth/AuthFooter";
-import { spacing } from "../styles/spacing";
-import { shadows } from "../styles/shadows";
+import AuthInput from "../components/auth/AuthInput";
+import { useAuth } from "../hooks/useAuth";
+import useAuthForm from "../hooks/useAuthForm";
+import useEntranceAnimation from "../hooks/useEntranceAnimation";
+import { useTheme } from "../hooks/useTheme";
 import { styles } from "../styles/screens/loginStyles";
+import { shadows } from "../styles/shadows";
+import { spacing } from "../styles/spacing";
 
 export default function RegisterScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const { register } = useAuth();
   const { theme, enableAnimations } = useTheme();
   const {
-    email, setEmail,
-    password, setPassword,
-    confirmPassword, setConfirmPassword,
-    displayName, setDisplayName,
-    error, isSubmitting, handleSubmit,
+    email,
+    setEmail,
+    password,
+    setPassword,
+    confirmPassword,
+    setConfirmPassword,
+    displayName,
+    setDisplayName,
+    error,
+    isSubmitting,
+    handleSubmit,
   } = useAuthForm({ mode: "register", register });
 
   const { animatedStyle } = useEntranceAnimation({
@@ -49,7 +61,12 @@ export default function RegisterScreen({ navigation }) {
       >
         <Animated.View style={animatedStyle}>
           <View style={styles.headerSection}>
-            <View style={[styles.logoCircle, { backgroundColor: theme.accentLight }]}>
+            <View
+              style={[
+                styles.logoCircle,
+                { backgroundColor: theme.accentLight },
+              ]}
+            >
               <Text style={styles.logoEmoji}>✨</Text>
             </View>
 
@@ -112,19 +129,32 @@ export default function RegisterScreen({ navigation }) {
             />
 
             {error ? (
-              <Text style={[styles.errorText, { color: theme.error }]}>{error}</Text>
+              <Text style={[styles.errorText, { color: theme.error }]}>
+                {error}
+              </Text>
             ) : null}
 
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={handleSubmit}
               disabled={isSubmitting}
-              style={[styles.loginButton, { backgroundColor: isSubmitting ? theme.accentLight : theme.accent, shadowColor: theme.accent }, shadows.button]}
+              style={[
+                styles.loginButton,
+                {
+                  backgroundColor: isSubmitting
+                    ? theme.accentLight
+                    : theme.accent,
+                  shadowColor: theme.accent,
+                },
+                shadows.button,
+              ]}
             >
               {isSubmitting ? (
                 <ActivityIndicator size="small" color={theme.accent} />
               ) : (
-                <Text style={[styles.loginButtonText, { color: theme.white }]}>Create Account</Text>
+                <Text style={[styles.loginButtonText, { color: theme.white }]}>
+                  Create Account
+                </Text>
               )}
             </TouchableOpacity>
 

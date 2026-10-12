@@ -44,7 +44,11 @@ export default function AuthInput({
         />
 
         {value.length > 0 && (
-          <TouchableOpacity onPress={() => onChangeText("")} style={styles.clearBtn} disabled={!editable}>
+          <TouchableOpacity
+            onPress={() => onChangeText("")}
+            style={styles.clearBtn}
+            disabled={!editable}
+          >
             <Text style={{ color: theme.textSecondary, fontSize: 16 }}>✕</Text>
           </TouchableOpacity>
         )}

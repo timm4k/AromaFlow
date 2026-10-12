@@ -1,6 +1,6 @@
-import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 const storage = createJSONStorage(() => ({
   getItem: async (name) => AsyncStorage.getItem(name),
@@ -41,7 +41,7 @@ const useSettingsStore = create(
       name: "@aromaflow/settings",
       storage,
       partialize: (state) => {
-        const { ready, ...persistable } = state;
+        const { ready: _ready, ...persistable } = state;
         return persistable;
       },
     },

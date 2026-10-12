@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import useAuthStore from "../store/authStore";
 import useSettingsStore from "../store/settingsStore";
@@ -23,6 +23,11 @@ export default function StoreSubscriber() {
   const setSubError = useAromaStore((s) => s.setSubscriptionError);
   const incrementReady = useAromaStore((s) => s.incrementReady);
   const favorites = useAromaStore((s) => s.favorites);
+  const resetSubscriptions = useAromaStore((s) => s.resetSubscriptions);
+  const userId = currentUser?.uid;
+  const favoritesKey = `${FAVORITES_KEY}_${userId || "guest"}`;
+  const [hydratedKey, setHydratedKey] = useState(null);
+  const restoringFavorites = useRef(false);
 
   useEffect(() => {
     return initAuthListener();
@@ -35,16 +40,39 @@ export default function StoreSubscriber() {
 
   useEffect(() => {
     if (!ready || sessionOnly) return;
+    let active = true;
+    restoringFavorites.current = true;
+    setFavorites([]);
     (async () => {
       try {
-        const uid = currentUser?.uid || "guest";
-        const raw = await AsyncStorage.getItem(`${FAVORITES_KEY}_${uid}`);
-        if (raw) setFavorites(JSON.parse(raw));
-      } catch {}
+        const raw = await AsyncStorage.getItem(favoritesKey);
+        const stored = raw ? JSON.parse(raw) : [];
+        if (
+          !Array.isArray(stored) ||
+          !stored.every(
+            (id) => typeof id === "string" || typeof id === "number",
+          )
+        ) {
+          throw new Error("Invalid favorites data");
+        }
+        if (active) setFavorites(stored);
+      } catch {
+        if (active) setSubError("Could not restore your saved favorites");
+      } finally {
+        if (active) {
+          restoringFavorites.current = false;
+          setHydratedKey({ key: favoritesKey });
+        }
+      }
     })();
-  }, [currentUser?.uid, ready, sessionOnly, setFavorites]);
+    return () => {
+      active = false;
+    };
+  }, [favoritesKey, ready, sessionOnly, setFavorites, setSubError]);
 
   useEffect(() => {
+    resetSubscriptions();
+    setCustomAromas([]);
     const publicFired = { current: false };
     const myFired = { current: false };
 
@@ -57,7 +85,6 @@ export default function StoreSubscriber() {
         }
       },
       (error) => {
-        console.error("Public aromas subscription error", error);
         setSubError(error.message || "Failed to load public aromas");
         if (!publicFired.current) {
           publicFired.current = true;
@@ -66,13 +93,12 @@ export default function StoreSubscriber() {
       },
     );
 
-    if (!currentUser) {
-      setCustomAromas([]);
+    if (!userId) {
       return () => unsub1();
     }
 
     const unsub2 = subscribeMyAromas(
-      currentUser.uid,
+      userId,
       (list) => {
         setCustomAromas(list);
         if (!myFired.current) {
@@ -81,7 +107,6 @@ export default function StoreSubscriber() {
         }
       },
       (error) => {
-        console.error("My aromas subscription error", error);
         setSubError(error.message || "Failed to load your aromas");
         if (!myFired.current) {
           myFired.current = true;
@@ -94,16 +119,27 @@ export default function StoreSubscriber() {
       unsub1();
       unsub2();
     };
-  }, [currentUser?.uid]);
+  }, [
+    userId,
+    setPublicAromas,
+    setCustomAromas,
+    setSubError,
+    incrementReady,
+    resetSubscriptions,
+  ]);
 
   useEffect(() => {
-    if (!ready || sessionOnly) return;
-    const uid = currentUser?.uid || "guest";
-    AsyncStorage.setItem(
-      `${FAVORITES_KEY}_${uid}`,
-      JSON.stringify(favorites),
-    ).catch(() => {});
-  }, [favorites, currentUser?.uid, ready, sessionOnly]);
+    if (
+      !ready ||
+      sessionOnly ||
+      restoringFavorites.current ||
+      hydratedKey?.key !== favoritesKey
+    )
+      return;
+    AsyncStorage.setItem(favoritesKey, JSON.stringify(favorites)).catch(() =>
+      setSubError("Could not save your favorites on this device"),
+    );
+  }, [favorites, favoritesKey, hydratedKey, ready, sessionOnly, setSubError]);
 
   return null;
 }

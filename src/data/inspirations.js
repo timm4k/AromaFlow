@@ -1,11 +1,13 @@
 const STABLE_URLS = {
-  "Technique": "https://www.allure.com/story/scents-allure-editors-love-to-layer",
-  "Science": "https://www.psychologytoday.com/us/blog/the-superhuman-mind/202106/how-the-sense-smell-triggers-old-and-long-forgotten-memories",
-  "Education": "https://www.fragrantica.com/notes/",
-  "History": "https://www.britannica.com/art/perfume",
-  "Morning": "https://www.healthline.com/health/healthy-sleep/how-to-wake-up",
-  "Sleep": "https://www.healthline.com/health/healthy-sleep/essential-oils-for-sleep",
-  "Energy": "https://www.healthline.com/health/essential-oils-for-energy",
+  Technique: "https://www.allure.com/story/scents-allure-editors-love-to-layer",
+  Science:
+    "https://www.psychologytoday.com/us/blog/the-superhuman-mind/202106/how-the-sense-smell-triggers-old-and-long-forgotten-memories",
+  Education: "https://www.fragrantica.com/notes/",
+  History: "https://www.britannica.com/art/perfume",
+  Morning: "https://www.healthline.com/health/healthy-sleep/how-to-wake-up",
+  Sleep:
+    "https://www.healthline.com/health/healthy-sleep/essential-oils-for-sleep",
+  Energy: "https://www.healthline.com/health/essential-oils-for-energy",
 };
 
 export const inspirations = [

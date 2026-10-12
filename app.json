@@ -5,17 +5,20 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
-    "jsEngine": "jsc",
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#F3ECFF"
+      },
+      "package": "com.tatelin.AromaFlow"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "fa6a81de-9a90-4b8f-94b3-81f9e73716fe"
       }
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    }
+    "plugins": ["expo-status-bar"]
   }
 }

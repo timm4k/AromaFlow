@@ -13,21 +13,25 @@ import { db } from "../config/firebase";
 
 const AROMAS_COLLECTION = "aromas";
 
+function readAromas(snapshot) {
+  return snapshot.docs
+    .map((entry) => ({ id: entry.id, ...entry.data() }))
+    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+}
+
 export function subscribePublicAromas(onData, onError) {
   const q = query(
     collection(db, AROMAS_COLLECTION),
     where("visibility", "==", "public"),
   );
 
-  return onSnapshot(q, (snapshot) => {
-    const list = snapshot.docs
-      .map((d) => ({ id: d.id, ...d.data() }))
-      .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-    console.log(
-      `[subscribePublicAromas] received ${list.length} docs`,
-    );
-    onData(list);
-  }, onError);
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      onData(readAromas(snapshot));
+    },
+    onError,
+  );
 }
 
 export function subscribeMyAromas(ownerId, onData, onError) {
@@ -36,26 +40,10 @@ export function subscribeMyAromas(ownerId, onData, onError) {
     where("ownerId", "==", ownerId),
   );
 
-  return onSnapshot(q, (snapshot) => {
-    const list = snapshot.docs
-      .map((d) => ({ id: d.id, ...d.data() }))
-      .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-    console.log(
-      `[subscribeMyAromas] ownerId=${ownerId}, received ${list.length} docs`,
-    );
-    onData(list);
-  }, onError);
-}
-
-export function subscribeAromaById(id, onData, onError) {
   return onSnapshot(
-    doc(db, AROMAS_COLLECTION, id),
-    (snap) => {
-      if (snap.exists()) {
-        onData({ id: snap.id, ...snap.data() });
-      } else {
-        onData(null);
-      }
+    q,
+    (snapshot) => {
+      onData(readAromas(snapshot));
     },
     onError,
   );
@@ -81,8 +69,6 @@ export async function addAroma(aroma) {
   };
 
   await setDoc(ref, data);
-
-  console.log(`[addAroma] created doc ${ref.id}`, data);
 
   return { id: ref.id, ...data };
 }

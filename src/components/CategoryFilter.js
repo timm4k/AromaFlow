@@ -1,24 +1,25 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import {
   Animated,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
 
 function CategoryPill({ cat, active, onSelect, theme, animationsEnabled }) {
-  const bgAnim = useRef(new Animated.Value(active ? 1 : 0)).current;
+  const [bgAnim] = useState(() => new Animated.Value(active ? 1 : 0));
 
   useEffect(() => {
     const dur = animationsEnabled ? 200 : 0;
-    Animated.timing(bgAnim, {
+    const animation = Animated.timing(bgAnim, {
       toValue: active ? 1 : 0,
       duration: dur,
       useNativeDriver: false,
-    }).start();
-  }, [active, animationsEnabled]);
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [active, animationsEnabled, bgAnim]);
 
   const bgColor = bgAnim.interpolate({
     inputRange: [0, 1],
@@ -31,10 +32,7 @@ function CategoryPill({ cat, active, onSelect, theme, animationsEnabled }) {
   });
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.75}
-      onPress={() => onSelect(cat)}
-    >
+    <TouchableOpacity activeOpacity={0.75} onPress={() => onSelect(cat)}>
       <Animated.View
         style={[
           styles.pill,

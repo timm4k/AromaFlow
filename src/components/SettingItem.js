@@ -1,10 +1,4 @@
-import {
-  StyleSheet,
-  Switch,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
 
 import { borderRadius } from "../styles/spacing";
 
@@ -50,9 +44,7 @@ export default function SettingItem({
                 style={[
                   styles.option,
                   {
-                    backgroundColor: active
-                      ? theme.accent
-                      : theme.accentLight,
+                    backgroundColor: active ? theme.accent : theme.accentLight,
                     borderColor: active ? theme.accent : "transparent",
                   },
                 ]}

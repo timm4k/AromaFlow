@@ -5,9 +5,7 @@ import { styles } from "../../styles/screens/addAromaStyles";
 export default function MoodSelector({ selectedMood, onSelect, theme }) {
   return (
     <View style={styles.section}>
-      <Text style={[styles.sectionLabel, { color: theme.text }]}>
-        Mood
-      </Text>
+      <Text style={[styles.sectionLabel, { color: theme.text }]}>Mood</Text>
 
       <View style={styles.moodGrid}>
         {moods.map((mood) => {
@@ -21,9 +19,7 @@ export default function MoodSelector({ selectedMood, onSelect, theme }) {
               style={[
                 styles.moodPill,
                 {
-                  backgroundColor: active
-                    ? theme.accent
-                    : theme.accentLight,
+                  backgroundColor: active ? theme.accent : theme.accentLight,
                   borderColor: active ? theme.accent : "transparent",
                 },
               ]}

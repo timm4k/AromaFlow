@@ -1,11 +1,12 @@
-import { useTheme } from "../hooks/useTheme";
 import { useAromas } from "../hooks/useAromas";
+import { useTheme } from "../hooks/useTheme";
+import AddAromaScreen from "../screens/AddAromaScreen";
 import AromasScreen from "../screens/AromasScreen";
 import MyAromasScreen from "../screens/MyAromasScreen";
-import AddAromaScreen from "../screens/AddAromaScreen";
 
 export function AromasTab() {
-  const { theme, compactCards, showEmojis, enableAnimations, favoritesOnly } = useTheme();
+  const { theme, compactCards, showEmojis, enableAnimations, favoritesOnly } =
+    useTheme();
   const { favorites, onToggleFavorite } = useAromas();
 
   return (
@@ -23,7 +24,13 @@ export function AromasTab() {
 
 export function MyAromasTab() {
   const { theme, enableAnimations } = useTheme();
-  const { myAromas, favorites, onToggleFavorite, onDeleteAroma, onUpdateAroma } = useAromas();
+  const {
+    myAromas,
+    favorites,
+    onToggleFavorite,
+    onDeleteAroma,
+    onUpdateAroma,
+  } = useAromas();
 
   return (
     <MyAromasScreen
