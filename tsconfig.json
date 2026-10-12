@@ -5,8 +5,12 @@
     "allowJs": true,
     "checkJs": false,
     "noEmit": true,
-    "types": ["react", "react-native", "jest"]
+    "types": ["react", "react-native"]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "tests/**/*.ts", "tests/**/*.tsx"],
+  "include": [
+    "app/**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
   "exclude": ["node_modules", "dist", "export-check"]
 }

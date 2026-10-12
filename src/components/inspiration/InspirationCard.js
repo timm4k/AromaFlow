@@ -1,9 +1,8 @@
-import { Text, TouchableOpacity, View } from "react-native";
-import { Animated } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { shadows } from "../../styles/shadows";
-import { styles } from "../../styles/screens/inspirationStyles";
+import { useRouter } from "expo-router";
+import { Animated, Text, TouchableOpacity, View } from "react-native";
 import useCardAnimation from "../../hooks/useCardAnimation";
+import { styles } from "../../styles/screens/inspirationStyles";
+import { shadows } from "../../styles/shadows";
 
 export default function InspirationCard({
   item,
@@ -11,14 +10,14 @@ export default function InspirationCard({
   theme,
   enableAnimations,
 }) {
-  const navigation = useNavigation();
+  const router = useRouter();
   const { animatedStyle, onPressIn, onPressOut } = useCardAnimation({
     index,
     enabled: enableAnimations,
   });
 
   function handlePress() {
-    navigation.navigate("InspirationDetails", { inspiration: item });
+    router.push({ pathname: "/inspiration/[id]", params: { id: item.id } });
   }
 
   return (

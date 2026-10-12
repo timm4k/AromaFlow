@@ -1,8 +1,9 @@
-import { Text, TouchableOpacity, View } from "react-native";
-import { Animated } from "react-native";
-import { shadows } from "../../styles/shadows";
-import { styles } from "../../styles/screens/myAromasStyles";
+import { Animated, Text, TouchableOpacity, View } from "react-native";
+import { ScentImage } from "../../file-based-navigation/ScentImage";
+import { getPhotoSubject } from "../../file-based-navigation/scentCatalog";
 import useCardAnimation from "../../hooks/useCardAnimation";
+import { styles } from "../../styles/screens/myAromasStyles";
+import { shadows } from "../../styles/shadows";
 
 export default function CustomAromaCard({
   item,
@@ -38,7 +39,14 @@ export default function CustomAromaCard({
           ]}
         >
           <View style={[styles.emojiBox, { backgroundColor: theme.bg }]}>
-            <Text style={styles.emoji}>{item.emoji || ""}</Text>
+            <ScentImage
+              subject={getPhotoSubject(item)}
+              title={item.title}
+              emoji={item.emoji || ""}
+              imageUri={item.imageUri}
+              height={58}
+              thumbnail
+            />
           </View>
 
           <View style={styles.content}>

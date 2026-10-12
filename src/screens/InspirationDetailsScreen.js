@@ -7,14 +7,18 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { inspirations } from "../data/inspirations";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../hooks/useTheme";
 import { styles } from "../styles/screens/inspirationDetailsStyles";
 import { shadows } from "../styles/shadows";
 import { spacing } from "../styles/spacing";
 
-export default function InspirationDetailsScreen({ route, navigation }) {
-  const { inspiration } = route.params;
+export default function InspirationDetailsScreen() {
+  const { id } = useLocalSearchParams();
+  const router = useRouter();
+  const inspiration = inspirations.find((item) => item.id === id);
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
 
@@ -42,6 +46,26 @@ export default function InspirationDetailsScreen({ route, navigation }) {
     }
   }
 
+  if (!inspiration) {
+    return (
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: theme.bg, paddingTop: insets.top },
+        ]}
+      >
+        <Text style={{ color: theme.text }}>Article not found</Text>
+        <TouchableOpacity
+          onPress={() =>
+            router.canGoBack() ? router.back() : router.replace("/inspiration")
+          }
+        >
+          <Text style={{ color: theme.accent }}>Back to inspiration</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <View style={[styles.container, { backgroundColor: theme.bg }]}>
       <View
@@ -51,7 +75,9 @@ export default function InspirationDetailsScreen({ route, navigation }) {
         ]}
       >
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={() =>
+            router.canGoBack() ? router.back() : router.replace("/inspiration")
+          }
           style={styles.backBtn}
           activeOpacity={0.7}
         >

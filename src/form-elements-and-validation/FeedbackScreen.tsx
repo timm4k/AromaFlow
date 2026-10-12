@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -33,7 +33,7 @@ const confirmationTitle = "Thank you for your feedback!";
 export default function FeedbackScreen() {
   const { theme, enableAnimations } = useTheme();
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation();
+  const router = useRouter();
   const [receipt, setReceipt] = useState<string | null>(null);
   const emailInput = useRef<TextInput>(null);
   const commentInput = useRef<TextInput>(null);
@@ -86,7 +86,9 @@ export default function FeedbackScreen() {
         <View style={styles.content}>
           <Pressable
             accessibilityRole="button"
-            onPress={() => navigation.goBack()}
+            onPress={() =>
+              router.canGoBack() ? router.back() : router.replace("/")
+            }
             style={({ pressed }) => [styles.back, pressed && styles.pressed]}
           >
             <Text style={{ color: theme.accent }}>← Back to AromaFlow</Text>

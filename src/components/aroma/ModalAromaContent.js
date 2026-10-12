@@ -1,5 +1,7 @@
-import { Text, View } from "react-native";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import { ScentImage } from "../../file-based-navigation/ScentImage";
+import { ScentPhotoCredit } from "../../file-based-navigation/ScentPhotoCredit";
+import { getPhotoSubject } from "../../file-based-navigation/scentCatalog";
 import { borderRadius } from "../../styles/spacing";
 import { typography } from "../../styles/typography";
 
@@ -8,9 +10,13 @@ export default function ModalAromaContent({ aroma, theme }) {
 
   return (
     <>
-      <View style={[styles.emojiBox, { backgroundColor: theme.bg }]}>
-        <Text style={styles.emoji}>{aroma.emoji || ""}</Text>
-      </View>
+      <ScentImage
+        subject={getPhotoSubject(aroma)}
+        title={aroma.title}
+        emoji={aroma.emoji || ""}
+        imageUri={aroma.imageUri}
+        height={160}
+      />
 
       <Text
         style={[
@@ -126,21 +132,17 @@ export default function ModalAromaContent({ aroma, theme }) {
           {aroma.mood || ""}
         </Text>
       </View>
+      {!aroma.imageUri && (
+        <ScentPhotoCredit
+          subject={getPhotoSubject(aroma)}
+          title={aroma.title}
+        />
+      )}
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  emojiBox: {
-    width: 84,
-    height: 84,
-    borderRadius: borderRadius.xl,
-    justifyContent: "center",
-    alignItems: "center",
-    alignSelf: "center",
-    marginBottom: 14,
-  },
-  emoji: { fontSize: 42 },
   title: { ...typography.screenTitle, textAlign: "center", marginBottom: 10 },
   badge: {
     alignSelf: "center",

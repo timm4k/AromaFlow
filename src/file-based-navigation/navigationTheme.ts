@@ -1,4 +1,10 @@
-export function getNavigationTheme(theme, darkMode) {
+import type { Theme } from "expo-router/react-navigation";
+import { getTheme } from "../styles/colors";
+
+export function getNavigationTheme(
+  theme: ReturnType<typeof getTheme>,
+  darkMode: boolean,
+): Theme {
   return {
     dark: darkMode,
     colors: {

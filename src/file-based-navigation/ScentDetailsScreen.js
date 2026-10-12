@@ -2,9 +2,14 @@ import {
   ActivityIndicator,
   ScrollView,
   Text,
+  Pressable,
   TouchableOpacity,
   View,
 } from "react-native";
+import { Stack, useRouter } from "expo-router";
+import { ScentImage } from "./ScentImage";
+import { ScentPhotoCredit } from "./ScentPhotoCredit";
+import { getScentById, getPhotoSubject } from "./scentCatalog";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import EmptyState from "../components/EmptyState";
 import ConfirmModal from "../components/common/ConfirmModal";
@@ -15,11 +20,15 @@ import { useAuth } from "../hooks/useAuth";
 import useImageUpload from "../hooks/useImageUpload";
 import { useTheme } from "../hooks/useTheme";
 import { styles } from "../styles/screens/aromaDetailsStyles";
+import { borderRadius, spacing } from "../styles/spacing";
 
-export default function AromaDetailsScreen({ route, navigation }) {
-  const { aromaId } = route.params;
+export default function ScentDetailsScreen({ aromaId }) {
+  const router = useRouter();
+  const catalogScent = aromaId ? getScentById(aromaId) : undefined;
+  const goBack = () =>
+    router.canGoBack() ? router.back() : router.replace("/");
   const insets = useSafeAreaInsets();
-  const { theme } = useTheme();
+  const { theme, showEmojis } = useTheme();
   const { currentUser } = useAuth();
 
   const {
@@ -45,6 +54,9 @@ export default function AromaDetailsScreen({ route, navigation }) {
   if (loading) {
     return (
       <View style={[styles.container, { backgroundColor: theme.bg }]}>
+        <Stack.Screen
+          options={{ title: catalogScent?.title || "Loading aroma" }}
+        />
         <ActivityIndicator
           size="large"
           color={theme.accent}
@@ -57,10 +69,11 @@ export default function AromaDetailsScreen({ route, navigation }) {
   if (!aroma) {
     return (
       <View style={[styles.container, { backgroundColor: theme.bg }]}>
-        <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
+        <Stack.Screen options={{ title: "Aroma not found" }} />
+        <View style={styles.header}>
           <TouchableOpacity
             activeOpacity={0.7}
-            onPress={() => navigation.goBack()}
+            onPress={goBack}
             style={styles.backButton}
           >
             <Text style={[styles.backText, { color: theme.accent }]}>
@@ -71,7 +84,7 @@ export default function AromaDetailsScreen({ route, navigation }) {
         <EmptyState
           emoji="🔍"
           title="Aroma not found"
-          subtitle="This aroma may have been deleted or is no longer available."
+          subtitle="This aroma may have been deleted or is no longer available"
           theme={theme}
         />
       </View>
@@ -80,17 +93,12 @@ export default function AromaDetailsScreen({ route, navigation }) {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.bg }]}>
-      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Text style={[styles.backText, { color: theme.accent }]}>← Back</Text>
-        </TouchableOpacity>
-
+      <Stack.Screen options={{ title: aroma.title }} />
+      <View style={[styles.header, { justifyContent: "flex-end" }]}>
         <View style={styles.headerActions}>
           <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel="Share aroma"
             activeOpacity={0.7}
             onPress={handleShare}
             style={styles.headerActionBtn}
@@ -99,6 +107,8 @@ export default function AromaDetailsScreen({ route, navigation }) {
           </TouchableOpacity>
 
           <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel="Add calendar reminder"
             activeOpacity={0.7}
             onPress={handleCalendarReminder}
             style={styles.headerActionBtn}
@@ -110,11 +120,19 @@ export default function AromaDetailsScreen({ route, navigation }) {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[
+          styles.content,
+          { paddingBottom: insets.bottom + spacing.xl },
+        ]}
       >
-        <View style={[styles.emojiBox, { backgroundColor: theme.accentLight }]}>
-          <Text style={styles.emoji}>{aroma.emoji || "🌸"}</Text>
-        </View>
+        {!previewUri && !aroma.imageUri && (
+          <ScentImage
+            subject={getPhotoSubject(aroma)}
+            title={aroma.title}
+            emoji={showEmojis !== false ? aroma.emoji || "" : ""}
+            height={240}
+          />
+        )}
 
         <Text
           style={[
@@ -195,6 +213,13 @@ export default function AromaDetailsScreen({ route, navigation }) {
           value={aroma.origin || "Custom creation"}
           theme={theme}
         />
+        {catalogScent && (
+          <DetailRow
+            label="Sample discovery rating"
+            value={`★ ${catalogScent.rating.toFixed(1)} / 5`}
+            theme={theme}
+          />
+        )}
 
         {aroma.recommendedUsage && (
           <DetailRow
@@ -275,6 +300,30 @@ export default function AromaDetailsScreen({ route, navigation }) {
             🌿 Built-in aroma · part of the AromaFlow library
           </Text>
         )}
+        {!previewUri && !aroma.imageUri && (
+          <ScentPhotoCredit
+            subject={getPhotoSubject(aroma)}
+            title={aroma.title}
+          />
+        )}
+        <Pressable
+          accessibilityRole="button"
+          onPress={goBack}
+          style={({ pressed }) => [
+            {
+              padding: spacing.md,
+              alignItems: "center",
+              backgroundColor: theme.accentLight,
+              borderRadius: borderRadius.md,
+              marginTop: spacing.md,
+            },
+            pressed && { opacity: 0.8 },
+          ]}
+        >
+          <Text style={{ color: theme.accent, fontWeight: "700" }}>
+            ← Back to scent catalog
+          </Text>
+        </Pressable>
       </ScrollView>
 
       <ConfirmModal

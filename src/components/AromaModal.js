@@ -7,7 +7,7 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import { shadows } from "../styles/shadows";
 import { borderRadius } from "../styles/spacing";
 import ModalAromaContent from "./aroma/ModalAromaContent";
@@ -21,7 +21,7 @@ export default function AromaModal({
   enableAnimations,
   currentUser,
 }) {
-  const navigation = useNavigation();
+  const router = useRouter();
 
   const [overlayOpacity] = useState(() => new Animated.Value(0));
   const [sheetTranslate] = useState(() => new Animated.Value(300));
@@ -129,7 +129,10 @@ export default function AromaModal({
               activeOpacity={0.85}
               onPress={() => {
                 handleClose();
-                navigation.navigate("AromaDetails", { aromaId: aroma.id });
+                router.push({
+                  pathname: "/aroma/[id]",
+                  params: { id: aroma.id },
+                });
               }}
               style={[styles.viewDetailsBtn, { backgroundColor: theme.accent }]}
             >

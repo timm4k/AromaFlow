@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AromaCard from "../components/AromaCard";
+import { getPhotoSubject } from "../file-based-navigation/scentCatalog";
 import AromaModal from "../components/AromaModal";
 import ConfirmationModal from "../components/ConfirmationModal";
 import EmptyState from "../components/EmptyState";
@@ -85,6 +86,8 @@ export default function CommunityScreen() {
           return (
             <View>
               <AromaCard
+                photoSubject={getPhotoSubject(item)}
+                imageUri={item.imageUri}
                 title={item.title}
                 category={item.category}
                 intensity={item.intensity}

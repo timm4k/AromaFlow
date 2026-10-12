@@ -1,19 +1,19 @@
 import { useMemo, useState } from "react";
+import { useRouter } from "expo-router";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import AromaCard from "../components/AromaCard";
-import AromaModal from "../components/AromaModal";
+import { ScentCard } from "./ScentCard";
+import { scentCatalog } from "./scentCatalog";
 import CategoryFilter from "../components/CategoryFilter";
 import ScreenHeader from "../components/ScreenHeader";
 import SearchBar from "../components/SearchBar";
-import { useAuth } from "../hooks/useAuth";
 
-import { aromas, categories } from "../data/aromas";
+import { categories } from "../data/aromas";
 import { spacing } from "../styles/spacing";
 import { filterAromas } from "../utils/filterAromas";
 
-export default function AromasScreen({
+export default function ScentCatalogScreen({
   theme,
   compactCards,
   favorites,
@@ -23,13 +23,12 @@ export default function AromasScreen({
   enableAnimations,
 }) {
   const insets = useSafeAreaInsets();
-  const { currentUser } = useAuth();
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [selectedAroma, setSelectedAroma] = useState(null);
 
   const filtered = useMemo(
-    () => filterAromas(aromas, searchQuery, selectedCategory),
+    () => filterAromas(scentCatalog, searchQuery, selectedCategory),
     [searchQuery, selectedCategory],
   );
 
@@ -65,38 +64,33 @@ export default function AromasScreen({
       </View>
 
       <FlatList
+        initialNumToRender={4}
+        maxToRenderPerBatch={4}
+        windowSize={5}
         data={visibleAromas}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.list}
+        ListEmptyComponent={
+          <Text style={{ color: theme.textSecondary, padding: spacing.lg }}>
+            No scents match your filters — try another name or scent family
+          </Text>
+        }
         renderItem={({ item, index }) => (
-          <AromaCard
-            title={item.title}
-            category={item.category}
-            intensity={item.intensity}
-            shortDescription={item.shortDescription}
-            emoji={showEmojis !== false ? item.emoji : ""}
-            theme={theme}
+          <ScentCard
+            item={item}
             compact={compactCards}
-            onPress={() => setSelectedAroma(item)}
-            favorited={favorites.includes(item.id)}
-            onToggleFavorite={() => onToggleFavorite(item.id)}
+            showEmojis={showEmojis}
             enableAnimations={enableAnimations}
             index={index}
+            onPress={() =>
+              router.push({ pathname: "/aroma/[id]", params: { id: item.id } })
+            }
+            favorited={favorites.includes(item.id)}
+            onToggleFavorite={() => onToggleFavorite(item.id)}
           />
         )}
       />
-
-      {selectedAroma && (
-        <AromaModal
-          visible={!!selectedAroma}
-          aroma={selectedAroma}
-          onClose={() => setSelectedAroma(null)}
-          theme={theme}
-          enableAnimations={enableAnimations}
-          currentUser={currentUser}
-        />
-      )}
     </View>
   );
 }

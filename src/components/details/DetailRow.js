@@ -1,7 +1,12 @@
 import { Text, View } from "react-native";
 import { styles } from "../../styles/screens/aromaDetailsStyles";
 
-export default function DetailRow({ label, value, valueColor, theme }) {
+export default function DetailRow({
+  label,
+  value,
+  valueColor = undefined,
+  theme,
+}) {
   return (
     <View style={styles.detailRow}>
       <Text

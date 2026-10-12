@@ -13,6 +13,7 @@ export const styles = StyleSheet.create({
     marginVertical: 6,
   },
   emojiBox: {
+    overflow: "hidden",
     width: 58,
     height: 58,
     borderRadius: borderRadius.md,
@@ -20,7 +21,6 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 14,
   },
-  emoji: { fontSize: 28 },
   content: { flex: 1 },
   header: {
     flexDirection: "row",

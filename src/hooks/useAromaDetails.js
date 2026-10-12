@@ -1,16 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Alert, Share } from "react-native";
-import { aromas as localAromas } from "../data/aromas";
+import { getScentById } from "../file-based-navigation/scentCatalog";
 import { getAromaById } from "../firebase/aromaService";
 import { createCalendarReminder } from "../services/calendarService";
-
-function findLocalAroma(id) {
-  return (
-    localAromas.find(
-      (a) => a.id === id || a.title?.toLowerCase().replace(/\s+/g, "-") === id,
-    ) || null
-  );
-}
 
 export default function useAromaDetails(aromaId, currentUser) {
   const [aroma, setAroma] = useState(null);
@@ -23,7 +15,11 @@ export default function useAromaDetails(aromaId, currentUser) {
     let active = true;
     (async () => {
       try {
-        const local = findLocalAroma(aromaId);
+        if (!aromaId) {
+          if (active) setAroma(null);
+          return;
+        }
+        const local = getScentById(aromaId);
 
         const data = local || (await getAromaById(aromaId));
         if (active) setAroma(data);

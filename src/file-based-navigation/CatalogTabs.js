@@ -1,8 +1,8 @@
 import { useAromas } from "../hooks/useAromas";
 import { useTheme } from "../hooks/useTheme";
 import AddAromaScreen from "../screens/AddAromaScreen";
-import AromasScreen from "../screens/AromasScreen";
 import MyAromasScreen from "../screens/MyAromasScreen";
+import ScentCatalogScreen from "./ScentCatalogScreen";
 
 export function AromasTab() {
   const { theme, compactCards, showEmojis, enableAnimations, favoritesOnly } =
@@ -10,14 +10,14 @@ export function AromasTab() {
   const { favorites, onToggleFavorite } = useAromas();
 
   return (
-    <AromasScreen
+    <ScentCatalogScreen
       theme={theme}
       compactCards={compactCards}
       favorites={favorites}
       favoritesOnly={favoritesOnly}
       onToggleFavorite={onToggleFavorite}
-      showEmojis={showEmojis}
       enableAnimations={enableAnimations}
+      showEmojis={showEmojis}
     />
   );
 }

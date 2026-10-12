@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import {
   Animated,
   Modal,
-  StyleSheet,
-  Text,
   Pressable,
   ScrollView,
+  StyleSheet,
+  Text,
   View,
 } from "react-native";
 

@@ -1,6 +1,6 @@
 import { Text, TouchableOpacity, View } from "react-native";
-import { moods, moodIcons } from "../../utils/constants";
 import { styles } from "../../styles/screens/addAromaStyles";
+import { moodIcons, moods } from "../../utils/constants";
 
 export default function MoodSelector({ selectedMood, onSelect, theme }) {
   return (

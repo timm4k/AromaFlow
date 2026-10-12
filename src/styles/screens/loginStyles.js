@@ -12,12 +12,6 @@ export const styles = StyleSheet.create({
     padding: spacing.lg,
   },
 
-  content: {
-    width: "100%",
-    maxWidth: 400,
-    alignSelf: "center",
-  },
-
   headerSection: {
     alignItems: "center",
     marginBottom: spacing.xl,

@@ -2,6 +2,7 @@
   "expo": {
     "name": "AromaFlow",
     "slug": "AromaFlow",
+    "scheme": "aromaflow",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
@@ -19,6 +20,6 @@
         "projectId": "fa6a81de-9a90-4b8f-94b3-81f9e73716fe"
       }
     },
-    "plugins": ["expo-status-bar"]
+    "plugins": ["expo-status-bar", "expo-router", "expo-font"]
   }
 }

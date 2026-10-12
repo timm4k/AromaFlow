@@ -1,4 +1,4 @@
-import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -13,7 +13,7 @@ import { styles } from "../styles/screens/settingsStyles";
 import { shadows } from "../styles/shadows";
 
 export default function SettingsScreen() {
-  const navigation = useNavigation();
+  const router = useRouter();
   const insets = useSafeAreaInsets();
   const { currentUser, logout } = useAuth();
   const {
@@ -139,7 +139,7 @@ export default function SettingsScreen() {
       <SettingsSection theme={theme}>
         <TouchableOpacity
           activeOpacity={0.7}
-          onPress={() => navigation.navigate("Feedback")}
+          onPress={() => router.push("/feedback")}
           style={[
             styles.calendarButton,
             { backgroundColor: theme.accentLight, borderColor: theme.accent },

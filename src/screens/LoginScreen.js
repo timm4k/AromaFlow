@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AuthCard from "../components/auth/AuthCard";
 import AuthFooter from "../components/auth/AuthFooter";
@@ -20,7 +21,8 @@ import { styles } from "../styles/screens/loginStyles";
 import { shadows } from "../styles/shadows";
 import { spacing } from "../styles/spacing";
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen() {
+  const router = useRouter();
   const insets = useSafeAreaInsets();
   const { login } = useAuth();
   const { theme, enableAnimations } = useTheme();
@@ -132,13 +134,13 @@ export default function LoginScreen({ navigation }) {
               theme={theme}
               label="Don't have an account?"
               actionLabel="Create One"
-              onAction={() => navigation.navigate("Register")}
+              onAction={() => router.push("/register")}
             />
             <AuthFooter
               theme={theme}
               label="Have a suggestion?"
               actionLabel="Leave feedback"
-              onAction={() => navigation.navigate("Feedback")}
+              onAction={() => router.push("/feedback")}
             />
           </AuthCard>
         </Animated.View>

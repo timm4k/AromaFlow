@@ -10,6 +10,8 @@ import { shadows } from "../styles/shadows";
 import { borderRadius } from "../styles/spacing";
 import { typography } from "../styles/typography";
 import useCardAnimation from "../hooks/useCardAnimation";
+import { ScentImage } from "../file-based-navigation/ScentImage";
+import { getPhotoSubject } from "../file-based-navigation/scentCatalog";
 
 export default function AromaCard({
   title,
@@ -24,6 +26,8 @@ export default function AromaCard({
   onToggleFavorite,
   enableAnimations,
   index,
+  photoSubject,
+  imageUri,
 }) {
   const dots = Array.from({ length: 5 }, (_, i) => i < (intensity || 0));
 
@@ -60,7 +64,17 @@ export default function AromaCard({
               },
             ]}
           >
-            <Text style={styles.emoji}>{emoji || ""}</Text>
+            <ScentImage
+              subject={
+                photoSubject ||
+                getPhotoSubject({ title, category, shortDescription })
+              }
+              title={title}
+              emoji={emoji || ""}
+              imageUri={imageUri}
+              height={compact ? 46 : 58}
+              thumbnail
+            />
           </View>
 
           <View style={styles.content}>
@@ -187,6 +201,7 @@ const styles = StyleSheet.create({
   },
 
   emojiBox: {
+    overflow: "hidden",
     width: 58,
     height: 58,
     borderRadius: borderRadius.md,
@@ -200,10 +215,6 @@ const styles = StyleSheet.create({
     height: 46,
     borderRadius: borderRadius.sm + 4,
     marginRight: 10,
-  },
-
-  emoji: {
-    fontSize: 28,
   },
 
   content: {

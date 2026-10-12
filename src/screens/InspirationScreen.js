@@ -5,7 +5,7 @@ import EmptyState from "../components/EmptyState";
 import InspirationCard from "../components/inspiration/InspirationCard";
 import ScreenHeader from "../components/ScreenHeader";
 import { useTheme } from "../hooks/useTheme";
-import { usePosts } from "../queries/usePosts";
+import { useInspirations } from "../queries/useInspirations";
 import { styles } from "../styles/screens/inspirationStyles";
 
 export default function InspirationScreen() {
@@ -18,7 +18,7 @@ export default function InspirationScreen() {
     error,
     refetch,
     isRefetching,
-  } = usePosts();
+  } = useInspirations();
 
   return (
     <View style={[styles.container, { backgroundColor: theme.bg }]}>

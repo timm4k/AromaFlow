@@ -1,6 +1,6 @@
 import { Text, TouchableOpacity, View } from "react-native";
-import { addCategories } from "../../utils/constants";
 import { styles } from "../../styles/screens/addAromaStyles";
+import { addCategories } from "../../utils/constants";
 
 export default function CategorySelector({
   selectedCategory,

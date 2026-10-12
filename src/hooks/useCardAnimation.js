@@ -8,7 +8,7 @@ export default function useCardAnimation({ index = 0, enabled = true } = {}) {
 
   useEffect(() => {
     const dur = enabled ? 400 : 0;
-    const delay = (index || 0) * 80;
+    const delay = enabled ? Math.min(index || 0, 6) * 80 : 0;
 
     const animation = Animated.parallel([
       Animated.timing(fadeIn, {

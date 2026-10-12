@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { borderRadius, spacing } from "../styles/spacing";
-import { shadows } from "../styles/shadows";
 import { Animated, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { shadows } from "../styles/shadows";
+import { borderRadius, spacing } from "../styles/spacing";
 
 export default function CustomButton({
   title,

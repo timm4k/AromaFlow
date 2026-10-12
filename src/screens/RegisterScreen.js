@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AuthCard from "../components/auth/AuthCard";
 import AuthFooter from "../components/auth/AuthFooter";
@@ -20,7 +21,8 @@ import { styles } from "../styles/screens/loginStyles";
 import { shadows } from "../styles/shadows";
 import { spacing } from "../styles/spacing";
 
-export default function RegisterScreen({ navigation }) {
+export default function RegisterScreen() {
+  const router = useRouter();
   const insets = useSafeAreaInsets();
   const { register } = useAuth();
   const { theme, enableAnimations } = useTheme();
@@ -162,7 +164,9 @@ export default function RegisterScreen({ navigation }) {
               theme={theme}
               label="Already have an account?"
               actionLabel="Sign In"
-              onAction={() => navigation.goBack()}
+              onAction={() =>
+                router.canGoBack() ? router.back() : router.replace("/login")
+              }
             />
           </AuthCard>
         </Animated.View>
