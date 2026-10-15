@@ -1,1 +1,1 @@
-export { default } from "../../src/screens/InspirationDetailsScreen";
+export { default } from "../../src/network-and-lifecycle/GuideDetailsScreen";

@@ -3,7 +3,6 @@ import {
   ScrollView,
   Text,
   Pressable,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { Stack, useRouter } from "expo-router";
@@ -71,15 +70,18 @@ export default function ScentDetailsScreen({ aromaId }) {
       <View style={[styles.container, { backgroundColor: theme.bg }]}>
         <Stack.Screen options={{ title: "Aroma not found" }} />
         <View style={styles.header}>
-          <TouchableOpacity
-            activeOpacity={0.7}
+          <Pressable
+            accessibilityRole="button"
             onPress={goBack}
-            style={styles.backButton}
+            style={({ pressed }) => [
+              styles.backButton,
+              pressed && { opacity: 0.7 },
+            ]}
           >
             <Text style={[styles.backText, { color: theme.accent }]}>
               ← Back
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
         <EmptyState
           emoji="🔍"
@@ -96,25 +98,29 @@ export default function ScentDetailsScreen({ aromaId }) {
       <Stack.Screen options={{ title: aroma.title }} />
       <View style={[styles.header, { justifyContent: "flex-end" }]}>
         <View style={styles.headerActions}>
-          <TouchableOpacity
+          <Pressable
             accessibilityRole="button"
             accessibilityLabel="Share aroma"
-            activeOpacity={0.7}
             onPress={handleShare}
-            style={styles.headerActionBtn}
+            style={({ pressed }) => [
+              styles.headerActionBtn,
+              pressed && { opacity: 0.7 },
+            ]}
           >
             <Text style={{ fontSize: 18 }}>📤</Text>
-          </TouchableOpacity>
+          </Pressable>
 
-          <TouchableOpacity
+          <Pressable
             accessibilityRole="button"
             accessibilityLabel="Add calendar reminder"
-            activeOpacity={0.7}
             onPress={handleCalendarReminder}
-            style={styles.headerActionBtn}
+            style={({ pressed }) => [
+              styles.headerActionBtn,
+              pressed && { opacity: 0.7 },
+            ]}
           >
             <Text style={{ fontSize: 18 }}>📅</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
 

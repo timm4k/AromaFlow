@@ -1,15 +1,10 @@
 import { useRouter } from "expo-router";
-import { Animated, Text, TouchableOpacity, View } from "react-native";
-import useCardAnimation from "../../hooks/useCardAnimation";
-import { styles } from "../../styles/screens/inspirationStyles";
-import { shadows } from "../../styles/shadows";
+import { Animated, Pressable, Text, View } from "react-native";
+import useCardAnimation from "../hooks/useCardAnimation";
+import { shadows } from "../styles/shadows";
+import { styles } from "./guideStyles";
 
-export default function InspirationCard({
-  item,
-  index,
-  theme,
-  enableAnimations,
-}) {
+export default function GuideCard({ item, index, theme, enableAnimations }) {
   const router = useRouter();
   const { animatedStyle, onPressIn, onPressOut } = useCardAnimation({
     index,
@@ -22,8 +17,9 @@ export default function InspirationCard({
 
   return (
     <Animated.View style={[styles.cardWrapper, animatedStyle]}>
-      <TouchableOpacity
-        activeOpacity={0.8}
+      <Pressable
+        accessibilityRole="button"
+        style={({ pressed }) => [pressed && { opacity: 0.8 }]}
         onPress={handlePress}
         onPressIn={onPressIn}
         onPressOut={onPressOut}
@@ -65,7 +61,7 @@ export default function InspirationCard({
             )}
           </View>
         </View>
-      </TouchableOpacity>
+      </Pressable>
     </Animated.View>
   );
 }

@@ -1,24 +1,26 @@
+import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   Alert,
   Linking,
+  Pressable,
   ScrollView,
   Share,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { inspirations } from "../data/inspirations";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../hooks/useTheme";
-import { styles } from "../styles/screens/inspirationDetailsStyles";
 import { shadows } from "../styles/shadows";
 import { spacing } from "../styles/spacing";
+import { inspirations } from "./guideArticles";
+import { styles } from "./guideDetailsStyles";
 
-export default function InspirationDetailsScreen() {
+export default function GuideDetailsScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-  const inspiration = inspirations.find((item) => item.id === id);
+  const inspiration = inspirations.find(
+    (item) => item.id === (Array.isArray(id) ? id[0] : id),
+  );
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
 
@@ -55,13 +57,15 @@ export default function InspirationDetailsScreen() {
         ]}
       >
         <Text style={{ color: theme.text }}>Article not found</Text>
-        <TouchableOpacity
+        <Pressable
+          accessibilityRole="button"
+          style={({ pressed }) => [styles.backBtn, pressed && { opacity: 0.8 }]}
           onPress={() =>
             router.canGoBack() ? router.back() : router.replace("/inspiration")
           }
         >
           <Text style={{ color: theme.accent }}>Back to inspiration</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     );
   }
@@ -74,23 +78,28 @@ export default function InspirationDetailsScreen() {
           { paddingTop: insets.top + spacing.md, backgroundColor: theme.bg },
         ]}
       >
-        <TouchableOpacity
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Back to guides"
+          style={({ pressed }) => [styles.backBtn, pressed && { opacity: 0.8 }]}
           onPress={() =>
             router.canGoBack() ? router.back() : router.replace("/inspiration")
           }
-          style={styles.backBtn}
-          activeOpacity={0.7}
         >
           <Text style={[styles.backArrow, { color: theme.accent }]}>←</Text>
-        </TouchableOpacity>
+        </Pressable>
 
-        <TouchableOpacity
+        <Pressable
+          accessibilityRole="button"
+          style={({ pressed }) => [
+            styles.shareBtn,
+            pressed && { opacity: 0.8 },
+          ]}
+          accessibilityLabel="Share guide"
           onPress={handleShare}
-          style={styles.shareBtn}
-          activeOpacity={0.7}
         >
           <Text style={{ fontSize: 20 }}>📤</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       <ScrollView
@@ -137,21 +146,22 @@ export default function InspirationDetailsScreen() {
           </View>
 
           {inspiration.sourceUrl && (
-            <TouchableOpacity
-              activeOpacity={0.8}
+            <Pressable
+              accessibilityRole="link"
               onPress={handleOpenSource}
-              style={[
+              style={({ pressed }) => [
                 styles.sourceBtn,
                 {
                   backgroundColor: theme.accentLight,
                   borderColor: theme.accent,
                 },
+                pressed && { opacity: 0.8 },
               ]}
             >
               <Text style={[styles.sourceBtnText, { color: theme.accent }]}>
                 🔗 Open Source Article
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           )}
         </View>
 

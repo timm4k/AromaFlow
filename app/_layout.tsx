@@ -4,6 +4,10 @@ import { AppProviders } from "../src/file-based-navigation/AppProviders";
 import { useAuth } from "../src/hooks/useAuth";
 import { useTheme } from "../src/hooks/useTheme";
 
+export const unstable_settings = {
+  anchor: "(tabs)",
+};
+
 function RootStack() {
   const { currentUser, loading } = useAuth();
   const { theme } = useTheme();
@@ -36,6 +40,14 @@ function RootStack() {
       <Stack.Protected guard={Boolean(currentUser)}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
+          name="place/[id]"
+          options={{
+            headerShown: true,
+            title: "Scent details",
+            headerBackTitle: "Back",
+          }}
+        />
+        <Stack.Screen
           name="aroma/[id]"
           options={{
             headerShown: true,
@@ -47,6 +59,7 @@ function RootStack() {
           name="inspiration/[id]"
           options={{ headerShown: false }}
         />
+        <Stack.Screen name="guides" options={{ headerShown: false }} />
       </Stack.Protected>
       <Stack.Protected guard={!currentUser}>
         <Stack.Screen name="login" options={{ headerShown: false }} />

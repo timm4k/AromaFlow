@@ -1,1 +1,5 @@
-export { AromasTab as default } from "../../src/file-based-navigation/CatalogTabs";
+import { AromasTab } from "../../src/file-based-navigation/CatalogTabs";
+
+export default function ScentCatalogRoute() {
+  return <AromasTab />;
+}

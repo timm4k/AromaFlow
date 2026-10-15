@@ -36,6 +36,9 @@ export default function AboutScreen() {
           Version {Constants.expoConfig?.version ?? "—"}
         </Text>
         <Text style={{ color: theme.textSecondary, lineHeight: 22 }}>
+          React Native · Expo Router · TypeScript
+        </Text>
+        <Text style={{ color: theme.textSecondary, lineHeight: 22 }}>
           The library contains built-in scent notes — Community shows shared
           creations, while My aromas belongs to your account
         </Text>

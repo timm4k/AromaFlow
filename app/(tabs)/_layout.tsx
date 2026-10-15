@@ -23,7 +23,7 @@ export default function TabsLayout() {
         options={{
           title: "Aromas",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="leaf-outline" color={color} size={size} />
+            <Ionicons name="compass-outline" color={color} size={size} />
           ),
         }}
       />

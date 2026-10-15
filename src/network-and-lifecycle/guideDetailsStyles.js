@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { borderRadius, spacing } from "../../styles/spacing";
+import { borderRadius, spacing } from "../styles/spacing";
 
 export const styles = StyleSheet.create({
   container: { flex: 1 },

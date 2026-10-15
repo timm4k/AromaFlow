@@ -12,6 +12,18 @@ import SearchBar from "../components/SearchBar";
 import { categories } from "../data/aromas";
 import { spacing } from "../styles/spacing";
 import { filterAromas } from "../utils/filterAromas";
+import type { Scent } from "./scentCatalog";
+import { useTheme } from "../hooks/useTheme";
+
+interface ScentCatalogScreenProps {
+  theme: ReturnType<typeof useTheme>["theme"];
+  compactCards: boolean;
+  favorites: string[];
+  favoritesOnly: boolean;
+  onToggleFavorite: (id: string) => void;
+  showEmojis: boolean;
+  enableAnimations: boolean;
+}
 
 export default function ScentCatalogScreen({
   theme,
@@ -21,13 +33,13 @@ export default function ScentCatalogScreen({
   onToggleFavorite,
   showEmojis,
   enableAnimations,
-}) {
+}: ScentCatalogScreenProps) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  const filtered = useMemo(
+  const filtered = useMemo<Scent[]>(
     () => filterAromas(scentCatalog, searchQuery, selectedCategory),
     [searchQuery, selectedCategory],
   );
@@ -63,7 +75,7 @@ export default function ScentCatalogScreen({
         </Text>
       </View>
 
-      <FlatList
+      <FlatList<Scent>
         initialNumToRender={4}
         maxToRenderPerBatch={4}
         windowSize={5}
@@ -84,7 +96,7 @@ export default function ScentCatalogScreen({
             enableAnimations={enableAnimations}
             index={index}
             onPress={() =>
-              router.push({ pathname: "/aroma/[id]", params: { id: item.id } })
+              router.push({ pathname: "/place/[id]", params: { id: item.id } })
             }
             favorited={favorites.includes(item.id)}
             onToggleFavorite={() => onToggleFavorite(item.id)}
