@@ -60,6 +60,10 @@ function RootStack() {
           options={{ headerShown: false }}
         />
         <Stack.Screen name="guides" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="profile"
+          options={{ title: "Your profile", headerShown: true }}
+        />
       </Stack.Protected>
       <Stack.Protected guard={!currentUser}>
         <Stack.Screen name="login" options={{ headerShown: false }} />

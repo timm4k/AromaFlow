@@ -10,7 +10,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
 import { createCalendarReminder } from "../services/calendarService";
 import { styles } from "../styles/screens/settingsStyles";
-import { shadows } from "../styles/shadows";
+import { ProfileShortcut } from "../camera-media/ProfileShortcut";
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -107,32 +107,12 @@ export default function SettingsScreen() {
       />
 
       {currentUser && (
-        <View
-          style={[
-            styles.profileCard,
-            { backgroundColor: theme.card, shadowColor: theme.shadow },
-            shadows.profile,
-          ]}
-        >
-          <View
-            style={[styles.avatarBox, { backgroundColor: theme.accentLight }]}
-          >
-            <Text style={styles.avatar}>
-              {currentUser.displayName?.[0] || "🌿"}
-            </Text>
-          </View>
-
-          <View style={styles.profileInfo}>
-            <Text style={[styles.profileName, { color: theme.text }]}>
-              Logged in as {currentUser.displayName}
-            </Text>
-            <Text
-              style={[styles.profileUsername, { color: theme.textSecondary }]}
-            >
-              {currentUser.email || ""}
-            </Text>
-          </View>
-        </View>
+        <ProfileShortcut
+          key={currentUser.uid}
+          profileId={currentUser.uid}
+          displayName={currentUser.displayName}
+          email={currentUser.email}
+        />
       )}
 
       <SectionHeader title="Feedback" theme={theme} />

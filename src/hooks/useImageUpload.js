@@ -1,74 +1,91 @@
-import * as ImagePicker from "expo-image-picker";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Alert } from "react-native";
 import { updateAroma } from "../firebase/aromaService";
+import { selectPhoto } from "../camera-media/mediaPicker";
+import { encodeSharedPhoto } from "../camera-media/mediaService";
 
 export default function useImageUpload(aroma, setAroma) {
   const [previewUri, setPreviewUri] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const session = useRef({ active: false, busy: false });
+
+  useEffect(() => {
+    const current = session.current;
+    current.active = true;
+    return () => {
+      current.active = false;
+    };
+  }, []);
 
   async function pickImage() {
+    const current = session.current;
+    if (!current.active || current.busy) return;
+    current.busy = true;
     try {
-      const permission =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!permission.granted) {
-        Alert.alert(
-          "Permission needed",
-          "Gallery access is required to attach images.",
-        );
-        return;
-      }
-
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ["images"],
-        quality: 0.8,
-        allowsEditing: true,
-        aspect: [4, 3],
-      });
-
-      if (result.canceled) return;
-
-      setPreviewUri(result.assets[0].uri);
+      const uri = await selectPhoto("gallery", [4, 3]);
+      if (!uri || !current.active) return;
+      setPreviewUri(uri);
       setShowConfirm(true);
     } catch {
-      Alert.alert(
-        "Gallery unavailable",
-        "Could not open your photos — please try again",
-      );
+      if (current.active)
+        Alert.alert(
+          "Gallery unavailable",
+          "Could not open your photos — please try again",
+        );
+    } finally {
+      current.busy = false;
     }
   }
 
-  async function confirmImage() {
+  async function persistImage(sourceUri) {
+    const current = session.current;
+    if (!current.active || current.busy || !aroma?.id) return;
+    current.busy = true;
     setShowConfirm(false);
-    if (!previewUri) return;
+    setIsSaving(true);
 
     try {
-      await updateAroma(aroma.id, { imageUri: previewUri });
-      setAroma((prev) => ({ ...prev, imageUri: previewUri }));
-      setPreviewUri(null);
-    } catch {
-      setPreviewUri(null);
-      Alert.alert("Error", "Failed to save image. Try again.");
+      const imageUri = sourceUri ? await encodeSharedPhoto(sourceUri) : "";
+      await updateAroma(aroma.id, { imageUri });
+      if (current.active) {
+        setAroma((prev) => ({ ...prev, imageUri }));
+        setPreviewUri(null);
+      }
+    } catch (error) {
+      if (current.active) {
+        setPreviewUri(null);
+        Alert.alert(
+          "Photo not saved",
+          error instanceof Error
+            ? error.message
+            : "Check your connection and try again",
+        );
+      }
+    } finally {
+      current.busy = false;
+      if (current.active) setIsSaving(false);
     }
+  }
+
+  function confirmImage() {
+    if (previewUri) return persistImage(previewUri);
   }
 
   function cancelImage() {
+    if (session.current.busy) return;
     setShowConfirm(false);
     setPreviewUri(null);
   }
 
-  async function removeImage() {
-    try {
-      await updateAroma(aroma.id, { imageUri: "" });
-      setAroma((prev) => ({ ...prev, imageUri: "" }));
-    } catch {
-      Alert.alert("Could not remove image", "Please try again");
-    }
+  function removeImage() {
+    return persistImage(null);
   }
 
   return {
     previewUri,
     showConfirm,
+    isSaving,
     pickImage,
     confirmImage,
     cancelImage,

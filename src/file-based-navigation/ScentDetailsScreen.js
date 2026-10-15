@@ -44,6 +44,7 @@ export default function ScentDetailsScreen({ aromaId }) {
   const {
     previewUri,
     showConfirm,
+    isSaving,
     pickImage,
     confirmImage,
     cancelImage,
@@ -164,6 +165,7 @@ export default function ScentDetailsScreen({ aromaId }) {
           aroma={aroma}
           isOwner={isOwner}
           previewUri={previewUri}
+          isSaving={isSaving}
           pickImage={pickImage}
           removeImage={removeImage}
           theme={theme}

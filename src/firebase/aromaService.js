@@ -10,12 +10,18 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
+import { getSharedImageUri } from "../camera-media/sharedImage";
 
 const AROMAS_COLLECTION = "aromas";
 
+function readAroma(entry) {
+  const data = entry.data();
+  return { ...data, id: entry.id, imageUri: getSharedImageUri(data.imageUri) };
+}
+
 function readAromas(snapshot) {
   return snapshot.docs
-    .map((entry) => ({ id: entry.id, ...entry.data() }))
+    .map(readAroma)
     .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 }
 
@@ -54,7 +60,7 @@ export async function getAromaById(id) {
 
   if (!snap.exists()) return null;
 
-  return { id: snap.id, ...snap.data() };
+  return readAroma(snap);
 }
 
 export async function addAroma(aroma) {
@@ -74,6 +80,12 @@ export async function addAroma(aroma) {
 }
 
 export async function updateAroma(id, updates) {
+  if (
+    "imageUri" in updates &&
+    updates.imageUri !== "" &&
+    getSharedImageUri(updates.imageUri) !== updates.imageUri
+  )
+    throw new Error("Only shared images or HTTPS image URLs can be saved");
   const ref = doc(db, AROMAS_COLLECTION, id);
 
   await updateDoc(ref, { ...updates, updatedAt: Date.now() });

@@ -1,15 +1,33 @@
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Image,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { styles } from "../../styles/screens/aromaDetailsStyles";
 
 export default function ImageSection({
   aroma,
   isOwner,
   previewUri,
+  isSaving,
   pickImage,
   removeImage,
   theme,
 }) {
   const displayUri = previewUri || aroma.imageUri;
+
+  if (isSaving)
+    return (
+      <View style={styles.imageSection}>
+        <ActivityIndicator
+          accessibilityLabel="Updating aroma photo"
+          color={theme.accent}
+        />
+        <Text style={{ color: theme.textSecondary }}>Updating photo…</Text>
+      </View>
+    );
 
   if (displayUri) {
     return (

@@ -20,6 +20,18 @@
         "projectId": "fa6a81de-9a90-4b8f-94b3-81f9e73716fe"
       }
     },
-    "plugins": ["expo-status-bar", "expo-router", "expo-font"]
+    "plugins": [
+      "expo-status-bar",
+      "expo-router",
+      "expo-font",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "AromaFlow needs photo library access to choose a profile photo or an aroma image",
+          "cameraPermission": "AromaFlow needs camera access to take a profile photo",
+          "microphonePermission": false
+        }
+      ]
+    ]
   }
 }
