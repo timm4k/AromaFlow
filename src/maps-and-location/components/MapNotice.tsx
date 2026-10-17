@@ -1,5 +1,11 @@
 import type { PropsWithChildren } from "react";
 import { Pressable, Text, View } from "react-native";
+import Animated, {
+  ReduceMotion,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
 import { useTheme } from "../../hooks/useTheme";
 import { styles } from "../styles";
 
@@ -34,21 +40,38 @@ export function MapAction({
   onPress,
   disabled = false,
 }: MapActionProps) {
-  const { theme } = useTheme();
+  const { theme, enableAnimations } = useTheme();
+  const scale = useSharedValue(1);
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.get() }],
+  }));
+  const animatePress = (pressed: boolean) => {
+    scale.set(
+      withSpring(pressed && enableAnimations ? 0.96 : 1, {
+        stiffness: 280,
+        damping: 22,
+        reduceMotion: ReduceMotion.System,
+      }),
+    );
+  };
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityState={{ disabled }}
-      disabled={disabled}
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.action,
-        { backgroundColor: theme.accentLight },
-        disabled && styles.disabled,
-        pressed && styles.pressed,
-      ]}
-    >
-      <Text style={[styles.actionText, { color: theme.text }]}>{title}</Text>
-    </Pressable>
+    <Animated.View style={animatedStyle}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ disabled }}
+        disabled={disabled}
+        onPress={onPress}
+        onPressIn={() => animatePress(true)}
+        onPressOut={() => animatePress(false)}
+        style={({ pressed }) => [
+          styles.action,
+          { backgroundColor: theme.accentLight },
+          disabled && styles.disabled,
+          pressed && styles.pressed,
+        ]}
+      >
+        <Text style={[styles.actionText, { color: theme.text }]}>{title}</Text>
+      </Pressable>
+    </Animated.View>
   );
 }

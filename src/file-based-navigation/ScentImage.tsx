@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import Animated, { FadeIn, ReduceMotion } from "react-native-reanimated";
 import { useTheme } from "../hooks/useTheme";
 import { useScentPhoto } from "./useScentPhoto";
 
@@ -12,6 +13,8 @@ interface ScentImageProps {
   thumbnail?: boolean;
 }
 
+const photoEntrance = FadeIn.duration(280).reduceMotion(ReduceMotion.System);
+
 export function ScentImage({
   subject,
   title,
@@ -20,7 +23,7 @@ export function ScentImage({
   imageUri,
   thumbnail = false,
 }: ScentImageProps) {
-  const { theme } = useTheme();
+  const { theme, enableAnimations } = useTheme();
   const { data: photo, isPending } = useScentPhoto(subject, !imageUri);
   const uri = imageUri || photo?.uri;
   const [failedUri, setFailedUri] = useState<string | null>(null);
@@ -50,7 +53,9 @@ export function ScentImage({
           )}
         </View>
       ) : (
-        <Image
+        <Animated.Image
+          key={uri}
+          entering={enableAnimations ? photoEntrance : undefined}
           accessibilityLabel={`${title} ingredient photo`}
           source={{ uri }}
           resizeMode="cover"
