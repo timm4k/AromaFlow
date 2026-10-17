@@ -63,6 +63,10 @@ function RootStack() {
         />
         <Stack.Screen name="guides" options={{ headerShown: false }} />
         <Stack.Screen
+          name="map"
+          options={{ title: "Scent origins", headerShown: true }}
+        />
+        <Stack.Screen
           name="todos"
           options={{ title: "Scent tasks", headerShown: true }}
         />

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { wikimediaHeaders } from "../services/wikimedia";
 
 export interface Post {
   id: number;
@@ -19,7 +20,7 @@ export const feedConfig = {
     native: {
       headers: {
         ...jsonHeaders,
-        "User-Agent": "AromaFlow/1.0 (educational fragrance reader)",
+        ...wikimediaHeaders,
       },
     },
   },

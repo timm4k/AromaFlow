@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Image, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { useTheme } from "../hooks/useTheme";
 import { useScentPhoto } from "./useScentPhoto";
 
@@ -34,9 +34,7 @@ export function ScentImage({
       }}
     >
       {!uri || failedUri === uri ? (
-        <View
-          style={{ height, alignItems: "center", justifyContent: "center" }}
-        >
+        <View style={[styles.placeholder, { height }]}>
           <Text
             accessibilityLabel={title}
             style={{ fontSize: thumbnail ? 24 : 48 }}
@@ -63,3 +61,7 @@ export function ScentImage({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  placeholder: { alignItems: "center", justifyContent: "center" },
+});

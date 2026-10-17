@@ -4,9 +4,8 @@ import { spacing } from "../spacing";
 export const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { paddingBottom: 120 },
+  actionSection: { marginHorizontal: spacing.md },
   calendarButton: {
-    marginHorizontal: spacing.md,
-    marginTop: spacing.sm,
     paddingVertical: 14,
     borderRadius: 20,
     alignItems: "center",

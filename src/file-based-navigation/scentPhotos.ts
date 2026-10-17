@@ -1,3 +1,7 @@
+import { wikimediaHeaders } from "../services/wikimedia";
+import { cacheScentPhoto } from "./cacheScentPhoto";
+
+export const photoThumbnailWidth = 960;
 const commonsApi = "https://commons.wikimedia.org/w/api.php";
 const imageHosts = new Set(["upload.wikimedia.org", "thumb.wikimedia.org"]);
 const sourceHosts = new Set(["commons.wikimedia.org"]);
@@ -59,13 +63,19 @@ export async function fetchScentPhoto(
     gsrlimit: "5",
     prop: "imageinfo",
     iiprop: "url|extmetadata|mime|dimensions",
-    iiurlwidth: "640",
+    iiurlwidth: String(photoThumbnailWidth),
     format: "json",
     formatversion: "2",
     origin: "*",
   });
-  const response = await fetch(`${commonsApi}?${params}`, { signal });
-  if (!response.ok) throw new Error("Photo source is temporarily unavailable");
+  const response = await fetch(`${commonsApi}?${params}`, {
+    signal,
+    headers: { ...wikimediaHeaders, Accept: "application/json" },
+  });
+  if (!response.ok)
+    throw new Error(
+      `Photo source is temporarily unavailable (HTTP ${response.status})`,
+    );
   const data: CommonsResponse | null = await response.json();
   if (!data || typeof data !== "object") return null;
   if (data.error) throw new Error("Photo search is temporarily unavailable");
@@ -97,7 +107,7 @@ export async function fetchScentPhoto(
     )
       continue;
     return {
-      uri: image.thumburl,
+      uri: await cacheScentPhoto(image.thumburl),
       sourceUrl: image.descriptionurl,
       author: plainText(author),
       license: plainText(license),

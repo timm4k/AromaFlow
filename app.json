@@ -25,6 +25,13 @@
       "expo-router",
       "expo-font",
       [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "AromaFlow uses your location to show your position on the scent origins map",
+          "locationWhenInUsePermission": "AromaFlow uses your location while you explore the scent origins map"
+        }
+      ],
+      [
         "expo-image-picker",
         {
           "photosPermission": "AromaFlow needs photo library access to choose a profile photo or an aroma image",

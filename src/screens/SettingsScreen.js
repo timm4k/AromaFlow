@@ -123,7 +123,7 @@ export default function SettingsScreen() {
       )}
 
       <SectionHeader title="Scent tasks" theme={theme} />
-      <SettingsSection theme={theme}>
+      <View style={styles.actionSection}>
         <Pressable
           accessibilityRole="button"
           onPress={() => router.push("/todos")}
@@ -137,38 +137,57 @@ export default function SettingsScreen() {
             Open scent tasks
           </Text>
         </Pressable>
-      </SettingsSection>
+      </View>
 
-      <SectionHeader title="Feedback" theme={theme} />
-      <SettingsSection theme={theme}>
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => router.push("/feedback")}
-          style={[
+      <SectionHeader title="Scent origins" theme={theme} />
+      <View style={styles.actionSection}>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => router.push("/map")}
+          style={({ pressed }) => [
             styles.calendarButton,
             { backgroundColor: theme.accentLight, borderColor: theme.accent },
+            pressed && styles.buttonPressed,
+          ]}
+        >
+          <Text style={[styles.calendarButtonText, { color: theme.accent }]}>
+            Explore scent origins
+          </Text>
+        </Pressable>
+      </View>
+
+      <SectionHeader title="Feedback" theme={theme} />
+      <View style={styles.actionSection}>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => router.push("/feedback")}
+          style={({ pressed }) => [
+            styles.calendarButton,
+            { backgroundColor: theme.accentLight, borderColor: theme.accent },
+            pressed && styles.buttonPressed,
           ]}
         >
           <Text style={[styles.calendarButtonText, { color: theme.accent }]}>
             Leave feedback
           </Text>
-        </TouchableOpacity>
-      </SettingsSection>
+        </Pressable>
+      </View>
       <SectionHeader title="Calendar" theme={theme} />
-      <SettingsSection theme={theme}>
-        <TouchableOpacity
-          activeOpacity={0.85}
+      <View style={styles.actionSection}>
+        <Pressable
+          accessibilityRole="button"
           onPress={handleCalendar}
           disabled={checkingCalendar}
-          style={[
+          style={({ pressed }) => [
             styles.calendarButton,
             { backgroundColor: theme.accentLight, borderColor: theme.accent },
+            pressed && styles.buttonPressed,
           ]}
         >
           <Text style={[styles.calendarButtonText, { color: theme.accent }]}>
             {checkingCalendar ? "Adding..." : "📅 Add Reminder to Calendar"}
           </Text>
-        </TouchableOpacity>
+        </Pressable>
 
         {calendarInstalled !== null && (
           <Text
@@ -182,7 +201,7 @@ export default function SettingsScreen() {
               : "✗ Calendar not available"}
           </Text>
         )}
-      </SettingsSection>
+      </View>
 
       <SectionHeader title="Appearance" theme={theme} />
       <SettingsSection theme={theme}>

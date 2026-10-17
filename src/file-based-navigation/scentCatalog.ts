@@ -112,5 +112,9 @@ export function getPhotoSubject(aroma: PhotoSubjectInput): string {
     );
     if (ingredient) return ingredient.photoSearch;
   }
-  return familyPhotoSubjects[aroma.category ?? ""] ?? "Perfume flowers";
+  return (
+    aroma.title?.trim() ||
+    familyPhotoSubjects[aroma.category ?? ""] ||
+    "Perfume flowers"
+  );
 }
