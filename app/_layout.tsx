@@ -3,6 +3,8 @@ import { ActivityIndicator, View } from "react-native";
 import { AppProviders } from "../src/file-based-navigation/AppProviders";
 import { useAuth } from "../src/hooks/useAuth";
 import { useTheme } from "../src/hooks/useTheme";
+import { Provider } from "react-redux";
+import { store } from "../src/redux-todos/store";
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -61,6 +63,10 @@ function RootStack() {
         />
         <Stack.Screen name="guides" options={{ headerShown: false }} />
         <Stack.Screen
+          name="todos"
+          options={{ title: "Scent tasks", headerShown: true }}
+        />
+        <Stack.Screen
           name="profile"
           options={{ title: "Your profile", headerShown: true }}
         />
@@ -76,8 +82,10 @@ function RootStack() {
 
 export default function RootLayout() {
   return (
-    <AppProviders>
-      <RootStack />
-    </AppProviders>
+    <Provider store={store}>
+      <AppProviders>
+        <RootStack />
+      </AppProviders>
+    </Provider>
   );
 }

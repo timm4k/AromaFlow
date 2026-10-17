@@ -1,6 +1,13 @@
 import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ScreenHeader from "../components/ScreenHeader";
 import SectionHeader from "../components/SectionHeader";
@@ -114,6 +121,23 @@ export default function SettingsScreen() {
           email={currentUser.email}
         />
       )}
+
+      <SectionHeader title="Scent tasks" theme={theme} />
+      <SettingsSection theme={theme}>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => router.push("/todos")}
+          style={({ pressed }) => [
+            styles.calendarButton,
+            { backgroundColor: theme.accentLight, borderColor: theme.accent },
+            pressed && styles.buttonPressed,
+          ]}
+        >
+          <Text style={[styles.calendarButtonText, { color: theme.accent }]}>
+            Open scent tasks
+          </Text>
+        </Pressable>
+      </SettingsSection>
 
       <SectionHeader title="Feedback" theme={theme} />
       <SettingsSection theme={theme}>

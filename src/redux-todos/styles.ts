@@ -1,0 +1,57 @@
+import { StyleSheet } from "react-native";
+import { borderRadius, spacing } from "../styles/spacing";
+
+export const styles = StyleSheet.create({
+  screen: { flex: 1 },
+  content: { flexGrow: 1, padding: spacing.md, gap: spacing.md },
+  section: { gap: spacing.md },
+  localContent: { flexGrow: 1 },
+  card: {
+    padding: spacing.md,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    gap: spacing.sm,
+  },
+  heading: { fontSize: 18, fontWeight: "700" },
+  title: { fontSize: 16, fontWeight: "600", lineHeight: 23 },
+  text: { fontSize: 14, lineHeight: 21 },
+  caption: { fontSize: 12, lineHeight: 18 },
+  reflection: { gap: spacing.sm, paddingTop: spacing.sm },
+  notesInput: { minHeight: 88, textAlignVertical: "top" },
+  ratingButton: {
+    minWidth: 44,
+    minHeight: 44,
+    borderWidth: 1,
+    borderRadius: borderRadius.sm,
+    padding: spacing.sm,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  row: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
+  input: {
+    borderWidth: 1,
+    borderRadius: borderRadius.sm,
+    padding: spacing.sm,
+    fontSize: 16,
+    minHeight: 44,
+  },
+  button: {
+    minHeight: 44,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.sm,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonText: { fontSize: 14, fontWeight: "600" },
+  filterButton: { borderWidth: 1, flexGrow: 1 },
+  pressed: { opacity: 0.7 },
+  disabled: { opacity: 0.5 },
+  center: {
+    padding: spacing.lg,
+    gap: spacing.md,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  separator: { height: spacing.sm },
+});

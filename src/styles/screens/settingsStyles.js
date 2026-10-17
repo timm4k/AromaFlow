@@ -14,6 +14,7 @@ export const styles = StyleSheet.create({
     borderWidth: 1.5,
   },
   calendarButtonText: { fontSize: 15, fontWeight: "700", letterSpacing: 0.2 },
+  buttonPressed: { opacity: 0.7 },
   calendarStatus: {
     fontSize: 12,
     fontWeight: "600",
